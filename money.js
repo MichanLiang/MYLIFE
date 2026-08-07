@@ -62,7 +62,7 @@ const Money = {
       <div class="sheet-head"><h3>新增存錢處</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="field"><label>名稱</label><input id="pName" placeholder="例如：悠遊卡"></div>
       <div class="row2">
-        <div class="field"><label>圖示</label><input id="pIcon" placeholder="👛" value="👛"></div>
+        <div class="field"><label>圖示</label><input id="pIcon" placeholder="💳" value="💳"></div>
         <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0"></div>
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.savePocket()">新增</button>
@@ -71,7 +71,7 @@ const Money = {
 
   savePocket(){
     const name = document.getElementById('pName').value.trim(); if(!name) return;
-    const icon = document.getElementById('pIcon').value.trim()||'👛';
+    const icon = document.getElementById('pIcon').value.trim()||'💳';
     const balance = parseFloat(document.getElementById('pBal').value)||0;
     State.pockets.push({id:uid(), name, icon, balance});
     save('pockets', State.pockets); App.closeSheet(); this.render();

@@ -29,7 +29,7 @@ const Items = {
   renderItems(){
     const el = document.getElementById('itemsPane');
     if(State.items.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">🧺</span>還沒有追蹤任何消耗品</div>`;
+      el.innerHTML = `<div class="empty"><span class="big">📦</span>還沒有追蹤任何消耗品</div>`;
       return;
     }
 
