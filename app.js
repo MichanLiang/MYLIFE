@@ -15,6 +15,10 @@ const App = {
       Auth.init();
       return;
     }
+    this.showShell();
+  },
+
+  showShell(){
     document.getElementById('view-login').classList.remove('active');
     document.getElementById('shell').style.display='block';
     document.documentElement.setAttribute('data-theme', State.theme==='default'?'':State.theme);
