@@ -57,8 +57,8 @@ const TBLOCK_CATS = [
 ];
 
 const MONEY_CATS = [
-  {k:'食', ic:'🍽️'}, {k:'交通', ic:'🚗'}, {k:'生活用品', ic:'🧴'}, {k:'娛樂', ic:'🎮'},
-  {k:'學業', ic:'📖'}, {k:'醫療', ic:'💊'}, {k:'其他', ic:'✨'}
+  {k:'食', ic:'ph ph-fork-knife'}, {k:'交通', ic:'ph ph-car'}, {k:'生活用品', ic:'ph ph-flask'}, {k:'娛樂', ic:'ph ph-game-controller'},
+  {k:'學業', ic:'ph ph-book-open'}, {k:'醫療', ic:'ph ph-pill'}, {k:'其他', ic:'ph ph-sparkle'}
 ];
 
 function tblockHours(){ const arr=[]; for(let h=6;h<23;h++) arr.push(h); return arr; }
@@ -70,8 +70,8 @@ const State = {
   order: load(LS.order, ['home','calendar','daily','money','items','articles']),
   daily: load(LS.daily, []),
   pockets: load(LS.pockets, [
-    {id:uid(), name:'錢包', balance:1500, icon:'💳'},
-    {id:uid(), name:'銀行帳戶', balance:20000, icon:'🏦'}
+    {id:uid(), name:'錢包', balance:1500, icon:'ph ph-wallet'},
+    {id:uid(), name:'銀行帳戶', balance:20000, icon:'ph ph-bank'}
   ]),
   money: load(LS.money, []),
   items: load(LS.items, []),
@@ -91,12 +91,12 @@ function listById(id){ return State.lists.find(l=>l.id===id); }
 
 /* ---- NAV ---- */
 const NAV_META = {
-  home:{icon:'🏠', label:'首頁'},
-  calendar:{icon:'📅', label:'行事曆'},
-  daily:{icon:'📝', label:'日常筆記'},
-  money:{icon:'💵', label:'記帳'},
-  items:{icon:'📦', label:'消耗品'},
-  articles:{icon:'📄', label:'筆記本'},
+  home:{icon:'ph ph-house', label:'首頁'},
+  calendar:{icon:'ph ph-calendar', label:'行事曆'},
+  daily:{icon:'ph ph-notebook', label:'日常筆記'},
+  money:{icon:'ph ph-wallet', label:'記帳'},
+  items:{icon:'ph ph-package', label:'消耗品'},
+  articles:{icon:'ph ph-file-text', label:'筆記本'},
 };
 
 /* ---- Categories for items ---- */

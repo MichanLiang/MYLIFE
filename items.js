@@ -29,7 +29,7 @@ const Items = {
   renderItems(){
     const el = document.getElementById('itemsPane');
     if(State.items.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">📦</span>還沒有追蹤任何消耗品</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-package"></i></span>還沒有追蹤任何消耗品</div>`;
       return;
     }
 
@@ -76,7 +76,7 @@ const Items = {
       else{statusTxt=`剩 ${du} 天`;}
     }
     return `<div class="item-card" onclick="Items.openItemDetail('${it.id}')">
-      <div class="top"><span class="ic">${it.icon||'📦'}</span><span class="status-dot" style="background:${statusColor}"></span></div>
+      <div class="top"><span class="ic"><i class="${it.icon||'ph ph-drop'}"></i></span><span class="status-dot" style="background:${statusColor}"></span></div>
       <h4>${esc(it.name)}</h4>
       <div class="sub">${esc(it.category||'一般')} · ${it.opened?'使用中':'未開封'}</div>
       ${it.quantity!==undefined? `<div class="qty">庫存：${it.quantity}</div>`:''}
@@ -89,7 +89,7 @@ const Items = {
     const it = State.items.find(x=>x.id===id); if(!it) return;
     App.openSheet(`
       <div class="sheet-head"><h3>${esc(it.name)}</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div style="text-align:center; font-size:48px; margin:10px 0;">${it.icon||'📦'}</div>
+      <div style="text-align:center; font-size:48px; margin:10px 0;"><i class="${it.icon||'ph ph-drop'}"></i></div>
       <div class="card">
         <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">分類</span><span style="font-weight:600;">${esc(it.category||'一般')}</span></div>
         <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">狀態</span><span style="font-weight:600;">${it.opened?'使用中':'未開封'}</span></div>
@@ -112,7 +112,7 @@ const Items = {
       <div class="sheet-head"><h3>編輯消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="row2">
         <div class="field"><label>名稱</label><input id="eName" value="${esc(it.name)}"></div>
-        <div class="field"><label>圖示</label><input id="eIcon" value="${it.icon||'📦'}"></div>
+        <div class="field"><label>圖示</label><input id="eIcon" value="${it.icon||'ph ph-drop'}"></div>
       </div>
       <div class="field"><label>分類</label><input id="eCat" value="${esc(it.category||'')}"></div>
       <div class="field"><label>所屬清單</label><select id="eList">${State.lists.map(l=>`<option value="${l.id}" ${l.id===(it.listId||'default')?'selected':''}>${esc(l.name)}</option>`).join('')}</select></div>
@@ -133,7 +133,7 @@ const Items = {
   saveEditItem(id){
     const it = State.items.find(x=>x.id===id); if(!it) return;
     it.name = document.getElementById('eName').value.trim()||it.name;
-    it.icon = document.getElementById('eIcon').value||'📦';
+    it.icon = document.getElementById('eIcon').value||'ph ph-drop';
     it.category = document.getElementById('eCat').value.trim();
     it.listId = document.getElementById('eList').value;
     it.quantity = document.getElementById('eQty').value!==''? parseFloat(document.getElementById('eQty').value):undefined;
@@ -151,7 +151,7 @@ const Items = {
       <div class="sheet-head"><h3>新增消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="row2">
         <div class="field"><label>名稱</label><input id="iName" placeholder="例如：洗面乳"></div>
-        <div class="field"><label>圖示</label><input id="iIcon" value="🧴"></div>
+        <div class="field"><label>圖示</label><input id="iIcon" value="ph ph-drop"></div>
       </div>
       <div class="field"><label>分類</label><input id="iCat" placeholder="例如：保養品" list="catList"><datalist id="catList">${ITEM_CATEGORIES.map(c=>`<option value="${c}">`).join('')}</datalist></div>
       <div class="field"><label>所屬清單</label><select id="iList">${State.lists.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></div>
@@ -174,7 +174,7 @@ const Items = {
     const qty = document.getElementById('iQty').value;
     State.items.push({
       id:uid(), name,
-      icon:document.getElementById('iIcon').value||'📦',
+      icon:document.getElementById('iIcon').value||'ph ph-drop',
       category:document.getElementById('iCat').value.trim(),
       listId:document.getElementById('iList').value,
       quantity:qty!==''? parseFloat(qty):undefined,
@@ -239,14 +239,14 @@ const Items = {
   renderChores(){
     const el = document.getElementById('choresPane');
     if(State.chores.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">🧹</span>還沒有瑣事項目</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-broom"></i></span>還沒有瑣事項目</div>`;
       return;
     }
     el.innerHTML = State.chores.map(c=>{
       const next = this.nextChoreDate(c);
       const du = daysUntil(next);
       return `<div class="card"><div class="chore-row" style="border:none; padding:0;" onclick="Items.doneChore('${c.id}')">
-        <div><div class="nm">${esc(c.name)}</div><div class="sub">每 ${c.freq} 天一次 · 下次：${niceDate(next)}${du<=0?' ⚠ 需完成':''}</div></div>
+        <div><div class="nm"><i class="ph ph-broom"></i> ${esc(c.name)}</div><div class="sub">每 ${c.freq} 天一次 · 下次：${niceDate(next)}${du<=0?' <i class="ph ph-warning"></i> 需完成':''}</div></div>
         <div class="btn btn-ghost btn-sm">完成 ✓</div>
       </div></div>`;
     }).join('');
@@ -294,8 +294,8 @@ const Items = {
       return `<div class="view-day-row">
         <div class="date-label">${niceDate(d)}<br><span style="font-size:10px;">星期${WD[new Date(d).getDay()]}</span></div>
         <div class="items">
-          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;">${it.icon||'📦'} ${esc(it.name)} 到期</span>`).join('')}
-          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;">🧹 ${esc(c.name)}</span>`).join('')}
+          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;"><i class="${it.icon||'ph ph-drop'}"></i> ${esc(it.name)} 到期</span>`).join('')}
+          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;"><i class="ph ph-broom"></i> ${esc(c.name)}</span>`).join('')}
         </div>
       </div>`;
     }).join('');
@@ -307,11 +307,11 @@ const Items = {
       return du!==null && du>=0 && du<=7;
     });
     if(expiringSoon.length>0){
-      html += `<div class="card"><h3 style="font-size:15px; margin-bottom:10px;">⚠ 本週即將到期</h3>`;
+      html += `<div class="card"><h3 style="font-size:15px; margin-bottom:10px;"><i class="ph ph-warning"></i> 本週即將到期</h3>`;
       html += expiringSoon.map(it=>{
         const du = daysUntil(it.expiry);
         return `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line);">
-          <span>${it.icon||'📦'}</span>
+          <span><i class="${it.icon||'ph ph-drop'}"></i></span>
           <span style="flex:1; font-weight:600;">${esc(it.name)}</span>
           <span style="font-size:12px; color:${du<=3?'#a1503e':'var(--c-item)'};">${du===0?'今天':du+'天後'}</span>
         </div>`;
@@ -320,7 +320,7 @@ const Items = {
     }
 
     if(!html.includes('view-day-row')){
-      html = `<div class="empty"><span class="big">📅</span>本週沒有消耗品到期或瑣事需完成</div>`;
+      html = `<div class="empty"><span class="big"><i class="ph ph-calendar"></i></span>本週沒有消耗品到期或瑣事需完成</div>`;
     }
     el.innerHTML = html;
   },
@@ -341,8 +341,8 @@ const Items = {
       html += `<div class="view-day-row">
         <div class="date-label">${month+1}/${d}</div>
         <div class="items">
-          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;">${it.icon||'📦'} ${esc(it.name)}</span>`).join('')}
-          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;">🧹 ${esc(c.name)}</span>`).join('')}
+          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;"><i class="${it.icon||'ph ph-drop'}"></i> ${esc(it.name)}</span>`).join('')}
+          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;"><i class="ph ph-broom"></i> ${esc(c.name)}</span>`).join('')}
         </div>
       </div>`;
     }

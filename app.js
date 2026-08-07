@@ -51,7 +51,7 @@ const App = {
       const b = document.createElement('button');
       b.className = 'nav-btn'+(this.curView===k?' active':'');
       b.dataset.v = k;
-      b.innerHTML = `<span class="ic">${m.icon}</span><span>${m.label}</span>`;
+      b.innerHTML = `<span class="ic"><i class="${m.icon}"></i></span><span>${m.label}</span>`;
       b.onclick = ()=>this.go(k);
       bar.appendChild(b);
     });

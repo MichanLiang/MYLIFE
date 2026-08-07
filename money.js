@@ -38,7 +38,7 @@ const Money = {
   renderList(){
     const el = document.getElementById('moneyListPane');
     if(State.money.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">💸</span>還沒有任何記帳紀錄</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-wallet"></i></span>還沒有任何記帳紀錄</div>`;
       return;
     }
     el.innerHTML = State.money.slice(0,60).map(t=>{
@@ -62,7 +62,7 @@ const Money = {
       <div class="sheet-head"><h3>新增存錢處</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="field"><label>名稱</label><input id="pName" placeholder="例如：悠遊卡"></div>
       <div class="row2">
-        <div class="field"><label>圖示</label><input id="pIcon" placeholder="💳" value="💳"></div>
+        <div class="field"><label>圖示</label><input id="pIcon" placeholder="ph ph-wallet" value="ph ph-wallet"></div>
         <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0"></div>
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.savePocket()">新增</button>
@@ -71,7 +71,7 @@ const Money = {
 
   savePocket(){
     const name = document.getElementById('pName').value.trim(); if(!name) return;
-    const icon = document.getElementById('pIcon').value.trim()||'💳';
+    const icon = document.getElementById('pIcon').value.trim()||'ph ph-wallet';
     const balance = parseFloat(document.getElementById('pBal').value)||0;
     State.pockets.push({id:uid(), name, icon, balance});
     save('pockets', State.pockets); App.closeSheet(); this.render();
@@ -133,7 +133,7 @@ const Money = {
       <div class="budget-box">
         <div class="budget-header">
           <h4>預算進度（本月）</h4>
-          <span style="font-size:12px; cursor:pointer; color:var(--c-money);" onclick="Money.editBudget()">設定預算 →</span>
+          <span style="font-size:12px; cursor:pointer; color:var(--c-money);" onclick="Money.editBudget()"><i class="ph ph-pencil-simple"></i> 設定預算</span>
         </div>
         ${budget>0 ? `
           <div style="font-size:13px;">已花 <strong>NT$${totalOut.toLocaleString()}</strong> / NT$${budget.toLocaleString()}</div>
@@ -180,7 +180,7 @@ const Money = {
   renderTransfer(){
     const el = document.getElementById('moneyTransferPane');
     if(State.pockets.length<2){
-      el.innerHTML = `<div class="empty"><span class="big">🔄</span>需要至少兩個存錢處才能轉帳</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-arrows-clockwise"></i></span>需要至少兩個存錢處才能轉帳</div>`;
       return;
     }
     el.innerHTML = `

@@ -34,15 +34,15 @@ const Daily = {
     const el = document.getElementById('dailyPlanPane');
     el.innerHTML = `
       <div class="goal-box">
-        <h4>🎯 年度目標</h4>
+        <h4><i class="ph ph-target"></i> 年度目標</h4>
         <textarea id="goalYear" placeholder="今年想達成什麼？" onblur="Daily.saveGoal('year',this.value)">${esc(goals.year)}</textarea>
       </div>
       <div class="goal-box">
-        <h4>📋 本月目標</h4>
+        <h4><i class="ph ph-clipboard-text"></i> 本月目標</h4>
         <textarea id="goalMonth" placeholder="這個月想完成什麼？" onblur="Daily.saveGoal('month',this.value)">${esc(goals.month)}</textarea>
       </div>
       <div class="goal-box">
-        <h4>✏️ 今日目標</h4>
+        <h4><i class="ph ph-pencil-simple"></i> 今日目標</h4>
         <textarea id="goalDay" placeholder="今天要做什麼？" onblur="Daily.saveGoal('day',this.value)">${esc(goals.day)}</textarea>
       </div>
       <div class="section-title"><h2>時間軸記錄</h2></div>
@@ -123,7 +123,7 @@ const Daily = {
   renderChart(){
     const el = document.getElementById('dailyChartPane');
     if(State.daily.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">📊</span>還沒有任何日常筆記</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-chart-bar"></i></span>還沒有任何日常筆記</div>`;
       return;
     }
     const counts = {};
@@ -225,7 +225,7 @@ const Daily = {
   renderDiary(){
     const el = document.getElementById('dailyDiaryPane');
     if(State.daily.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">📖</span>還沒有日記紀錄</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-book"></i></span>還沒有日記紀錄</div>`;
       return;
     }
     el.innerHTML = State.daily.map(e=>`

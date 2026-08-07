@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -44,10 +46,10 @@
         <div class="date-sub"><span class="dow" id="homeDow">--</span><span id="homeLunarNote">今天也要好好生活 ☺</span></div>
       </div>
       <div class="grid4">
-        <div class="card4 c-daily" onclick="App.go('daily')"><div class="tab"></div><div class="icon">📝</div><div><h3>日常筆記</h3><div class="meta" id="sumDaily">尚無紀錄</div></div></div>
-        <div class="card4 c-money" onclick="App.go('money')"><div class="tab"></div><div class="icon">💵</div><div><h3>記帳</h3><div class="meta" id="sumMoney">尚無紀錄</div></div></div>
-        <div class="card4 c-item" onclick="App.go('items')"><div class="tab"></div><div class="icon">📦</div><div><h3>消耗品記錄</h3><div class="meta" id="sumItems">尚無紀錄</div></div></div>
-        <div class="card4 c-note" onclick="App.go('articles')"><div class="tab"></div><div class="icon">📄</div><div><h3>文章筆記本</h3><div class="meta" id="sumArticles">尚無紀錄</div></div></div>
+        <div class="card4 c-daily" onclick="App.go('daily')"><div class="tab"></div><div class="icon"><i class="ph ph-notebook"></i></div><div><h3>日常筆記</h3><div class="meta" id="sumDaily">尚無紀錄</div></div></div>
+        <div class="card4 c-money" onclick="App.go('money')"><div class="tab"></div><div class="icon"><i class="ph ph-wallet"></i></div><div><h3>記帳</h3><div class="meta" id="sumMoney">尚無紀錄</div></div></div>
+        <div class="card4 c-item" onclick="App.go('items')"><div class="tab"></div><div class="icon"><i class="ph ph-package"></i></div><div><h3>消耗品記錄</h3><div class="meta" id="sumItems">尚無紀錄</div></div></div>
+        <div class="card4 c-note" onclick="App.go('articles')"><div class="tab"></div><div class="icon"><i class="ph ph-file-text"></i></div><div><h3>文章筆記本</h3><div class="meta" id="sumArticles">尚無紀錄</div></div></div>
       </div>
       <div class="section-title"><h2>今日代辦</h2><span class="more" onclick="App.go('calendar')">查看行事曆 →</span></div>
       <div id="homeTodos"></div>
@@ -154,14 +156,14 @@
       <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:8px;">調整底部導覽列的順序</div>
       <div id="orderList"></div>
       <div class="section-title"><h2>帳號</h2></div>
-      <button class="btn btn-ghost btn-block" onclick="Auth.logout()">🚪 登出帳號</button>
+      <button class="btn btn-ghost btn-block" onclick="Auth.logout()"><i class="ph ph-sign-out"></i> 登出帳號</button>
       <div class="section-title"><h2>資料</h2></div>
-      <button class="btn btn-ghost btn-block" style="color:#a1503e;" onclick="App.clearAllData()">🗑️ 清空所有資料</button>
+      <button class="btn btn-ghost btn-block" style="color:#a1503e;" onclick="App.clearAllData()"><i class="ph ph-trash"></i> 清空所有資料</button>
       <div style="height:20px;"></div>
     </div>
 
     <div class="bottom-nav" id="bottomNav"></div>
-    <button class="fab" id="fabBtn" onclick="App.onFab()">+</button>
+    <button class="fab" id="fabBtn" onclick="App.onFab()"><i class="ph ph-plus"></i></button>
   </div>
 </div>
 

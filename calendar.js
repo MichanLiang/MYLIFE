@@ -134,7 +134,7 @@ const Calendar = {
     document.getElementById('calWeekReview').innerHTML = `
       <div class="cal-review-card">
         <div class="summary" style="margin-bottom:8px;">
-          📝 代辦完成 ${weekStats.todosDone}/${weekStats.todosTotal} 項 ·
+          <i class="ph ph-check-circle"></i> 代辦完成 ${weekStats.todosDone}/${weekStats.todosTotal} 項 ·
           新增 ${weekStats.dailyCount} 篇日記 ·
           記帳 ${weekStats.moneyTx} 筆
         </div>
@@ -151,7 +151,7 @@ const Calendar = {
     document.getElementById('calMonthReview').innerHTML = `
       <div class="cal-review-card">
         <div class="summary" style="margin-bottom:8px;">
-          📝 代辦完成 ${monthStats.todosDone}/${monthStats.todosTotal} 項 ·
+          <i class="ph ph-check-circle"></i> 代辦完成 ${monthStats.todosDone}/${monthStats.todosTotal} 項 ·
           新增 ${monthStats.dailyCount} 篇日記 ·
           記帳 ${monthStats.moneyTx} 筆 ·
           支出 NT$${monthStats.totalOut.toLocaleString()}

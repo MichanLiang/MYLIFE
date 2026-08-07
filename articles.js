@@ -17,7 +17,7 @@ const Articles = {
     const el = document.getElementById('articlesList');
     const list = State.articles.filter(a=>this.filter==='all'||a.status===this.filter);
     if(list.length===0){
-      el.innerHTML = `<div class="empty"><span class="big">📄</span>還沒有筆記</div>`;
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-file-text"></i></span>還沒有筆記</div>`;
       return;
     }
     el.innerHTML = list.map(a=>`
@@ -28,7 +28,7 @@ const Articles = {
         </div>
         ${a.summary? `<div class="sum">${esc(a.summary)}</div>`:''}
         <div class="meta">
-          <span>📅 ${niceDate(a.date)}</span>
+          <span><i class="ph ph-calendar"></i> ${niceDate(a.date)}</span>
           ${a.tag?`<span class="pill" style="background:var(--paper-2);">${esc(a.tag)}</span>`:''}
           <span style="margin-left:auto; cursor:pointer;" onclick="Articles.toggleStatus('${a.id}')">${a.status==='待讀'?'標記已讀 ✓':'標記待讀 ↺'}</span>
         </div>

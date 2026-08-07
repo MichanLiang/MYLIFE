@@ -27,10 +27,10 @@ const Settings = {
     ol.innerHTML = State.order.map((k,i)=>{
       const m = NAV_META[k];
       return `<div class="order-row">
-        <span class="ic">${m.icon}</span><span class="nm">${m.label}</span>
+        <span class="ic"><i class="${m.icon}"></i></span><span class="nm">${m.label}</span>
         <div class="order-arrows">
-          <button ${i===0?'disabled':''} onclick="Settings.moveOrder(${i},-1)">▲</button>
-          <button ${i===State.order.length-1?'disabled':''} onclick="Settings.moveOrder(${i},1)">▼</button>
+          <button ${i===0?'disabled':''} onclick="Settings.moveOrder(${i},-1)"><i class="ph ph-caret-up"></i></button>
+          <button ${i===State.order.length-1?'disabled':''} onclick="Settings.moveOrder(${i},1)"><i class="ph ph-caret-down"></i></button>
         </div>
       </div>`;
     }).join('');
