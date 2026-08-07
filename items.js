@@ -1,0 +1,361 @@
+/* ============================================================
+   items.js — Consumables & Chores
+   Tabs: items, chores, week, month
+   ============================================================ */
+
+const Items = {
+  tab: 'items',
+
+  setTab(t){
+    this.tab = t;
+    ['iTabItems','iTabChores','iTabWeek','iTabMonth'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    const tabId = 'iTab'+t.charAt(0).toUpperCase()+t.slice(1);
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById('itemsPane').style.display = t==='items'?'':'none';
+    document.getElementById('choresPane').style.display = t==='chores'?'':'none';
+    document.getElementById('itemsWeekPane').style.display = t==='week'?'':'none';
+    document.getElementById('itemsMonthPane').style.display = t==='month'?'':'none';
+    this.render();
+  },
+
+  render(){
+    if(this.tab==='items') this.renderItems();
+    else if(this.tab==='chores') this.renderChores();
+    else if(this.tab==='week') this.renderWeek();
+    else if(this.tab==='month') this.renderMonth();
+  },
+
+  /* ---- Items Tab ---- */
+  renderItems(){
+    const el = document.getElementById('itemsPane');
+    if(State.items.length===0){
+      el.innerHTML = `<div class="empty"><span class="big">🧺</span>還沒有追蹤任何消耗品</div>`;
+      return;
+    }
+
+    // Group by list
+    const groups = {};
+    State.lists.forEach(l=>groups[l.id]=[]);
+    State.items.forEach(it=>{
+      const lid = it.listId || 'default';
+      if(!groups[lid]) groups[lid]=[];
+      groups[lid].push(it);
+    });
+
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:13px; color:var(--ink-soft);">共 ${State.items.length} 項</span>
+      <span style="font-size:12px; cursor:pointer; color:var(--c-item);" onclick="Items.openListManager()">管理清單 →</span>
+    </div>`;
+
+    State.lists.forEach(list=>{
+      const items = groups[list.id] || [];
+      if(items.length===0) return;
+      const sorted = [...items].sort((a,b)=>{
+        const da=daysUntil(a.expiry), db=daysUntil(b.expiry);
+        return (da===null?9999:da) - (db===null?9999:db);
+      });
+      html += `<div class="list-group">
+        <div class="list-group-header">
+          <h3>${esc(list.name)} (${items.length})</h3>
+        </div>
+        <div class="item-grid">
+          ${sorted.map(it=>this.renderItemCard(it)).join('')}
+        </div>
+      </div>`;
+    });
+
+    el.innerHTML = html;
+  },
+
+  renderItemCard(it){
+    const du = daysUntil(it.expiry);
+    let statusColor = '#6F8F63', statusTxt='狀況良好';
+    if(du!==null){
+      if(du<0){statusColor='#a1503e'; statusTxt='已過期';}
+      else if(du<=7){statusColor='#B8842E'; statusTxt=`剩 ${du} 天`;}
+      else{statusTxt=`剩 ${du} 天`;}
+    }
+    return `<div class="item-card" onclick="Items.openItemDetail('${it.id}')">
+      <div class="top"><span class="ic">${it.icon||'📦'}</span><span class="status-dot" style="background:${statusColor}"></span></div>
+      <h4>${esc(it.name)}</h4>
+      <div class="sub">${esc(it.category||'一般')} · ${it.opened?'使用中':'未開封'}</div>
+      ${it.quantity!==undefined? `<div class="qty">庫存：${it.quantity}</div>`:''}
+      ${it.daysPerUnit? `<div class="sub">每 ${it.daysPerUnit} 天消耗一單位</div>`:''}
+      <div class="sub" style="color:${statusColor}; font-weight:700; margin-top:4px;">${statusTxt}</div>
+    </div>`;
+  },
+
+  openItemDetail(id){
+    const it = State.items.find(x=>x.id===id); if(!it) return;
+    App.openSheet(`
+      <div class="sheet-head"><h3>${esc(it.name)}</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div style="text-align:center; font-size:48px; margin:10px 0;">${it.icon||'📦'}</div>
+      <div class="card">
+        <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">分類</span><span style="font-weight:600;">${esc(it.category||'一般')}</span></div>
+        <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">狀態</span><span style="font-weight:600;">${it.opened?'使用中':'未開封'}</span></div>
+        ${it.quantity!==undefined? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">庫存數量</span><span style="font-weight:600; font-family:'Fraunces',serif; font-size:16px; color:var(--c-item);">${it.quantity}</span></div>`:''}
+        ${it.daysPerUnit? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">消耗速度</span><span style="font-weight:600;">每 ${it.daysPerUnit} 天一單位</span></div>`:''}
+        ${it.expiry? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">到期日</span><span style="font-weight:600;">${niceDate(it.expiry)}</span></div>`:''}
+        ${it.buyDate? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">購買日期</span><span style="font-weight:600;">${niceDate(it.buyDate)}</span></div>`:''}
+        ${it.purchasePlace? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">購買地點</span><span style="font-weight:600;">${esc(it.purchasePlace)}</span></div>`:''}
+      </div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button class="btn btn-ghost" style="flex:1;" onclick="Items.openEditItem('${it.id}')">編輯</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="Items.deleteItem('${it.id}')">刪除</button>
+      </div>
+    `);
+  },
+
+  openEditItem(id){
+    const it = State.items.find(x=>x.id===id); if(!it) return;
+    App.openSheet(`
+      <div class="sheet-head"><h3>編輯消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="row2">
+        <div class="field"><label>名稱</label><input id="eName" value="${esc(it.name)}"></div>
+        <div class="field"><label>圖示</label><input id="eIcon" value="${it.icon||'📦'}"></div>
+      </div>
+      <div class="field"><label>分類</label><input id="eCat" value="${esc(it.category||'')}"></div>
+      <div class="field"><label>所屬清單</label><select id="eList">${State.lists.map(l=>`<option value="${l.id}" ${l.id===(it.listId||'default')?'selected':''}>${esc(l.name)}</option>`).join('')}</select></div>
+      <div class="row2">
+        <div class="field"><label>庫存數量</label><input id="eQty" type="number" value="${it.quantity??''}"></div>
+        <div class="field"><label>消耗一單位天數</label><input id="eDays" type="number" value="${it.daysPerUnit||''}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>購買日期</label><input id="eBuy" type="date" value="${it.buyDate||''}"></div>
+        <div class="field"><label>預估到期日</label><input id="eExp" type="date" value="${it.expiry||''}"></div>
+      </div>
+      <div class="field"><label>購買地點（選填）</label><input id="ePlace" value="${esc(it.purchasePlace||'')}"></div>
+      <div class="field"><label><input type="checkbox" id="eOpened" ${it.opened?'checked':''} style="width:auto; margin-right:6px;">使用中</label></div>
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveEditItem('${it.id}')">儲存</button>
+    `);
+  },
+
+  saveEditItem(id){
+    const it = State.items.find(x=>x.id===id); if(!it) return;
+    it.name = document.getElementById('eName').value.trim()||it.name;
+    it.icon = document.getElementById('eIcon').value||'📦';
+    it.category = document.getElementById('eCat').value.trim();
+    it.listId = document.getElementById('eList').value;
+    it.quantity = document.getElementById('eQty').value!==''? parseFloat(document.getElementById('eQty').value):undefined;
+    it.daysPerUnit = document.getElementById('eDays').value? parseInt(document.getElementById('eDays').value):null;
+    it.buyDate = document.getElementById('eBuy').value;
+    it.expiry = document.getElementById('eExp').value;
+    it.purchasePlace = document.getElementById('ePlace').value.trim();
+    it.opened = document.getElementById('eOpened').checked;
+    save('items', State.items);
+    App.closeSheet(); this.render();
+  },
+
+  openItemForm(){
+    App.openSheet(`
+      <div class="sheet-head"><h3>新增消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="row2">
+        <div class="field"><label>名稱</label><input id="iName" placeholder="例如：洗面乳"></div>
+        <div class="field"><label>圖示</label><input id="iIcon" value="🧴"></div>
+      </div>
+      <div class="field"><label>分類</label><input id="iCat" placeholder="例如：保養品" list="catList"><datalist id="catList">${ITEM_CATEGORIES.map(c=>`<option value="${c}">`).join('')}</datalist></div>
+      <div class="field"><label>所屬清單</label><select id="iList">${State.lists.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></div>
+      <div class="row2">
+        <div class="field"><label>庫存數量</label><input id="iQty" type="number" placeholder="選填"></div>
+        <div class="field"><label>消耗一單位天數</label><input id="iDays" type="number" placeholder="選填"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>購買日期</label><input id="iBuy" type="date" value="${todayStr()}"></div>
+        <div class="field"><label>預估到期日</label><input id="iExp" type="date"></div>
+      </div>
+      <div class="field"><label>購買地點（選填）</label><input id="iPlace" placeholder="例如：屈臣氏"></div>
+      <div class="field"><label><input type="checkbox" id="iOpened" style="width:auto; margin-right:6px;">使用中</label></div>
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveItem()">儲存</button>
+    `);
+  },
+
+  saveItem(){
+    const name = document.getElementById('iName').value.trim(); if(!name) return;
+    const qty = document.getElementById('iQty').value;
+    State.items.push({
+      id:uid(), name,
+      icon:document.getElementById('iIcon').value||'📦',
+      category:document.getElementById('iCat').value.trim(),
+      listId:document.getElementById('iList').value,
+      quantity:qty!==''? parseFloat(qty):undefined,
+      daysPerUnit:document.getElementById('iDays').value? parseInt(document.getElementById('iDays').value):null,
+      buyDate:document.getElementById('iBuy').value,
+      expiry:document.getElementById('iExp').value,
+      purchasePlace:document.getElementById('iPlace').value.trim(),
+      opened:document.getElementById('iOpened').checked
+    });
+    save('items', State.items); App.closeSheet(); this.render();
+  },
+
+  deleteItem(id){
+    if(!confirm('刪除這個項目？')) return;
+    State.items = State.items.filter(i=>i.id!==id);
+    save('items', State.items); App.closeSheet(); this.render();
+  },
+
+  /* ---- List Manager ---- */
+  openListManager(){
+    App.openSheet(`
+      <div class="sheet-head"><h3>管理清單</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div id="listManagerContent"></div>
+      <div style="margin-top:12px;">
+        <div style="display:flex; gap:8px;">
+          <input id="newListName" placeholder="新清單名稱" style="flex:1;">
+          <button class="btn btn-primary" onclick="Items.addList()">新增</button>
+        </div>
+      </div>
+    `);
+    this.renderListManager();
+  },
+
+  renderListManager(){
+    const el = document.getElementById('listManagerContent');
+    el.innerHTML = State.lists.map(l=>{
+      const count = State.items.filter(it=>(it.listId||'default')===l.id).length;
+      return `<div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px;">
+        <div><strong>${esc(l.name)}</strong> <span style="font-size:11px; color:var(--ink-soft);">(${count} 項)</span></div>
+        ${l.id!=='default'? `<span style="cursor:pointer; font-size:12px; color:#a1503e;" onclick="Items.deleteList('${l.id}')">刪除</span>`:''}
+      </div>`;
+    }).join('');
+  },
+
+  addList(){
+    const name = document.getElementById('newListName').value.trim(); if(!name) return;
+    State.lists.push({id:uid(), name});
+    save('lists', State.lists);
+    document.getElementById('newListName').value='';
+    this.renderListManager();
+  },
+
+  deleteList(id){
+    if(!confirm('刪除這個清單？物品不會被刪除，會移到預設清單。')) return;
+    State.items.forEach(it=>{ if(it.listId===id) it.listId='default'; });
+    State.lists = State.lists.filter(l=>l.id!==id);
+    save('lists', State.lists); save('items', State.items);
+    this.renderListManager();
+  },
+
+  /* ---- Chores Tab ---- */
+  renderChores(){
+    const el = document.getElementById('choresPane');
+    if(State.chores.length===0){
+      el.innerHTML = `<div class="empty"><span class="big">🧹</span>還沒有瑣事項目</div>`;
+      return;
+    }
+    el.innerHTML = State.chores.map(c=>{
+      const next = this.nextChoreDate(c);
+      const du = daysUntil(next);
+      return `<div class="card"><div class="chore-row" style="border:none; padding:0;" onclick="Items.doneChore('${c.id}')">
+        <div><div class="nm">${esc(c.name)}</div><div class="sub">每 ${c.freq} 天一次 · 下次：${niceDate(next)}${du<=0?' ⚠ 需完成':''}</div></div>
+        <div class="btn btn-ghost btn-sm">完成 ✓</div>
+      </div></div>`;
+    }).join('');
+  },
+
+  nextChoreDate(c){
+    const last=new Date((c.last||todayStr())+'T00:00:00');
+    last.setDate(last.getDate()+c.freq);
+    return fmtDate(last);
+  },
+
+  doneChore(id){
+    const c=State.chores.find(x=>x.id===id);
+    if(!c) return;
+    c.last=todayStr();
+    save('chores', State.chores); this.render();
+  },
+
+  openChoreForm(){
+    App.openSheet(`
+      <div class="sheet-head"><h3>新增瑣事</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="field"><label>名稱</label><input id="cName" placeholder="例如：清冰箱"></div>
+      <div class="field"><label>清理頻率（天）</label><input id="cFreq" type="number" value="7"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveChore()">儲存</button>
+    `);
+  },
+
+  saveChore(){
+    const name = document.getElementById('cName').value.trim(); if(!name) return;
+    State.chores.push({id:uid(), name, freq:parseInt(document.getElementById('cFreq').value)||7, last:todayStr()});
+    save('chores', State.chores); App.closeSheet(); this.render();
+  },
+
+  /* ---- Week View ---- */
+  renderWeek(){
+    const el = document.getElementById('itemsWeekPane');
+    const start = getWeekStart(new Date());
+    const dates = dateRange(start, new Date(start.getTime()+6*86400000));
+
+    let html = `<div class="card"><h3 style="font-size:15px; margin-bottom:10px;">本週檢視</h3>`;
+    html += dates.map(d=>{
+      const dayItems = State.items.filter(it=>it.expiry===d);
+      const dayChores = State.chores.filter(c=>this.nextChoreDate(c)===d);
+      if(dayItems.length===0 && dayChores.length===0) return '';
+      return `<div class="view-day-row">
+        <div class="date-label">${niceDate(d)}<br><span style="font-size:10px;">星期${WD[new Date(d).getDay()]}</span></div>
+        <div class="items">
+          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;">${it.icon||'📦'} ${esc(it.name)} 到期</span>`).join('')}
+          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;">🧹 ${esc(c.name)}</span>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    html += '</div>';
+
+    // Expiring soon
+    const expiringSoon = State.items.filter(it=>{
+      const du = daysUntil(it.expiry);
+      return du!==null && du>=0 && du<=7;
+    });
+    if(expiringSoon.length>0){
+      html += `<div class="card"><h3 style="font-size:15px; margin-bottom:10px;">⚠ 本週即將到期</h3>`;
+      html += expiringSoon.map(it=>{
+        const du = daysUntil(it.expiry);
+        return `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line);">
+          <span>${it.icon||'📦'}</span>
+          <span style="flex:1; font-weight:600;">${esc(it.name)}</span>
+          <span style="font-size:12px; color:${du<=3?'#a1503e':'var(--c-item)'};">${du===0?'今天':du+'天後'}</span>
+        </div>`;
+      }).join('');
+      html += '</div>';
+    }
+
+    if(!html.includes('view-day-row')){
+      html = `<div class="empty"><span class="big">📅</span>本週沒有消耗品到期或瑣事需完成</div>`;
+    }
+    el.innerHTML = html;
+  },
+
+  /* ---- Month View ---- */
+  renderMonth(){
+    const el = document.getElementById('itemsMonthPane');
+    const now = new Date();
+    const year = now.getFullYear(), month = now.getMonth();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+
+    let html = `<div class="card"><h3 style="font-size:15px; margin-bottom:10px;">${year}年 ${month+1}月 消耗品到期表</h3>`;
+    for(let d=1; d<=daysInMonth; d++){
+      const dateStr = fmtDate(new Date(year, month, d));
+      const dayItems = State.items.filter(it=>it.expiry===dateStr);
+      const dayChores = State.chores.filter(c=>this.nextChoreDate(c)===dateStr);
+      if(dayItems.length===0 && dayChores.length===0) continue;
+      html += `<div class="view-day-row">
+        <div class="date-label">${month+1}/${d}</div>
+        <div class="items">
+          ${dayItems.map(it=>`<span class="pill" style="background:var(--c-item-bg); color:var(--c-item); margin:2px;">${it.icon||'📦'} ${esc(it.name)}</span>`).join('')}
+          ${dayChores.map(c=>`<span class="pill" style="background:var(--c-daily-bg); color:var(--c-daily); margin:2px;">🧹 ${esc(c.name)}</span>`).join('')}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+
+    // Summary
+    const monthItems = State.items.filter(it=>{
+      if(!it.expiry) return false;
+      const d = new Date(it.expiry);
+      return d.getFullYear()===year && d.getMonth()===month;
+    });
+    html += `<div class="card"><div style="font-size:12px; color:var(--ink-soft);">本月共 ${monthItems.length} 項消耗品到期</div></div>`;
+
+    el.innerHTML = html;
+  }
+};

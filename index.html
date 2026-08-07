@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY LIFE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ====== LOGIN ====== -->
+  <div class="view active" id="view-login">
+    <div class="login-wrap">
+      <div class="logo">MY LIFE</div>
+      <div class="eyebrow" style="margin-top:8px;">Everything, one place</div>
+      <div class="tag"></div>
+      <div id="googleSignInBtn"></div>
+      <div id="fallbackLogin" style="display:none;">
+        <button class="g-btn" onclick="Auth.fallbackLogin()">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.6 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3c-7.7 0-14.3 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 45c5.3 0 10.2-2 13.9-5.4l-6.4-5.4C29.4 35.9 26.8 37 24 37c-5.3 0-9.8-3.4-11.4-8.1l-6.6 5.1C9.6 40.4 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.4-5.8 6.9l6.4 5.4C39.4 37.5 43 31.4 43 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
+          使用 Google 帳號登入
+        </button>
+      </div>
+      <div style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ====== MAIN SHELL ====== -->
+  <div id="shell" style="display:none;">
+    <div class="topbar">
+      <div class="brand">MY LIFE</div>
+      <div class="avatar-btn" id="avatarBtn" onclick="App.go('settings')">
+        <img id="avatarImg" style="width:100%;height:100%;border-radius:50%;display:none;" alt="">
+        <span id="avatarInitial">我</span>
+      </div>
+    </div>
+
+    <!-- ---- HOME ---- -->
+    <div class="view" id="view-home">
+      <div class="date-hero">
+        <div class="date-big" id="homeDateBig">--</div>
+        <div class="date-sub"><span class="dow" id="homeDow">--</span><span id="homeLunarNote">今天也要好好生活 ☺</span></div>
+      </div>
+      <div class="grid4">
+        <div class="card4 c-daily" onclick="App.go('daily')"><div class="tab"></div><div class="icon">📓</div><div><h3>日常筆記</h3><div class="meta" id="sumDaily">尚無紀錄</div></div></div>
+        <div class="card4 c-money" onclick="App.go('money')"><div class="tab"></div><div class="icon">💰</div><div><h3>記帳</h3><div class="meta" id="sumMoney">尚無紀錄</div></div></div>
+        <div class="card4 c-item" onclick="App.go('items')"><div class="tab"></div><div class="icon">🧺</div><div><h3>消耗品記錄</h3><div class="meta" id="sumItems">尚無紀錄</div></div></div>
+        <div class="card4 c-note" onclick="App.go('articles')"><div class="tab"></div><div class="icon">📰</div><div><h3>文章筆記本</h3><div class="meta" id="sumArticles">尚無紀錄</div></div></div>
+      </div>
+      <div class="section-title"><h2>今日代辦</h2><span class="more" onclick="App.go('calendar')">查看行事曆 →</span></div>
+      <div id="homeTodos"></div>
+    </div>
+
+    <!-- ---- CALENDAR ---- -->
+    <div class="view" id="view-calendar">
+      <div class="page-head"><h1>行事曆</h1><span class="page-tag" style="background:var(--c-cal-bg); color:var(--c-cal);">Calendar</span></div>
+      <div class="tabs">
+        <button class="tab-btn" id="calTabWeek" onclick="Calendar.setMode('week')">週檢視</button>
+        <button class="tab-btn" id="calTabMonth" onclick="Calendar.setMode('month')">月檢視</button>
+      </div>
+      <div class="cal-head">
+        <div class="cal-nav"><button class="icbtn" onclick="Calendar.shift(-1)">‹</button></div>
+        <div class="mth" id="calLabel">--</div>
+        <div class="cal-nav"><button class="icbtn" onclick="Calendar.shift(1)">›</button></div>
+      </div>
+      <div id="calWeekView" class="wk-strip"></div>
+      <div id="calMonthView" style="display:none;">
+        <div class="mon-grid" id="monGridHead"></div>
+        <div class="mon-grid" id="monGridBody"></div>
+      </div>
+      <div class="day-panel">
+        <div class="section-title" style="margin-top:6px;"><h2 id="dayPanelTitle">今天</h2></div>
+        <div id="dayAutoItems"></div>
+        <div id="dayTodoList"></div>
+        <div class="add-todo-row">
+          <input type="text" id="newTodoInput" placeholder="新增待辦事項…">
+          <button class="btn btn-primary" onclick="Calendar.addTodo()">加入</button>
+        </div>
+      </div>
+      <!-- 週/月檢討 -->
+      <div class="section-title" style="margin-top:20px;"><h2>週檢討</h2></div>
+      <div id="calWeekReview"></div>
+      <div class="section-title"><h2>月檢討</h2></div>
+      <div id="calMonthReview"></div>
+    </div>
+
+    <!-- ---- DAILY NOTES ---- -->
+    <div class="view" id="view-daily">
+      <div class="page-head"><h1>日常筆記</h1><span class="page-tag" style="background:var(--c-daily-bg); color:var(--c-daily);">Daily</span></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="dTabPlan" onclick="Daily.setTab('plan')">計劃表</button>
+        <button class="tab-btn" id="dTabChart" onclick="Daily.setTab('chart')">圖表</button>
+        <button class="tab-btn" id="dTabReview" onclick="Daily.setTab('review')">檢討簿</button>
+        <button class="tab-btn" id="dTabDiary" onclick="Daily.setTab('diary')">日記簿</button>
+      </div>
+      <div id="dailyPlanPane"></div>
+      <div id="dailyChartPane" style="display:none;"></div>
+      <div id="dailyReviewPane" style="display:none;"></div>
+      <div id="dailyDiaryPane" style="display:none;"></div>
+    </div>
+
+    <!-- ---- MONEY ---- -->
+    <div class="view" id="view-money">
+      <div class="page-head"><h1>記帳</h1><span class="page-tag" style="background:var(--c-money-bg); color:var(--c-money);">Money</span></div>
+      <div class="pocket-scroll" id="pocketScroll"></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="mTabList" onclick="Money.setTab('list')">明細</button>
+        <button class="tab-btn" id="mTabStat" onclick="Money.setTab('stat')">分析</button>
+        <button class="tab-btn" id="mTabTransfer" onclick="Money.setTab('transfer')">轉帳</button>
+      </div>
+      <div id="moneyListPane"></div>
+      <div id="moneyStatPane" style="display:none;"></div>
+      <div id="moneyTransferPane" style="display:none;"></div>
+    </div>
+
+    <!-- ---- ITEMS ---- -->
+    <div class="view" id="view-items">
+      <div class="page-head"><h1>消耗品記錄</h1><span class="page-tag" style="background:var(--c-item-bg); color:var(--c-item);">Items</span></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="iTabItems" onclick="Items.setTab('items')">消耗品清單</button>
+        <button class="tab-btn" id="iTabChores" onclick="Items.setTab('chores')">瑣事管理</button>
+        <button class="tab-btn" id="iTabWeek" onclick="Items.setTab('week')">週檢視</button>
+        <button class="tab-btn" id="iTabMonth" onclick="Items.setTab('month')">月檢視</button>
+      </div>
+      <div id="itemsPane"></div>
+      <div id="choresPane" style="display:none;"></div>
+      <div id="itemsWeekPane" style="display:none;"></div>
+      <div id="itemsMonthPane" style="display:none;"></div>
+    </div>
+
+    <!-- ---- ARTICLES ---- -->
+    <div class="view" id="view-articles">
+      <div class="page-head"><h1>文章筆記本</h1><span class="page-tag" style="background:var(--c-note-bg); color:var(--c-note);">Notes</span></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="aTabAll" onclick="Articles.setFilter('all')">全部</button>
+        <button class="tab-btn" id="aTabTodo" onclick="Articles.setFilter('待讀')">待讀</button>
+        <button class="tab-btn" id="aTabDone" onclick="Articles.setFilter('已讀')">已讀</button>
+      </div>
+      <div id="articlesList"></div>
+    </div>
+
+    <!-- ---- SETTINGS ---- -->
+    <div class="view" id="view-settings">
+      <div class="page-head"><h1>設定</h1></div>
+      <div class="profile-box">
+        <div class="av" id="setAvatar">我</div>
+        <div><div class="nm" id="setName">--</div><div class="em" id="setEmail">--</div></div>
+      </div>
+      <div class="section-title"><h2>外觀主題</h2></div>
+      <div class="theme-row" id="themeRow"></div>
+      <div class="section-title"><h2>頁面排序</h2></div>
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:8px;">調整底部導覽列的順序</div>
+      <div id="orderList"></div>
+      <div class="section-title"><h2>帳號</h2></div>
+      <button class="btn btn-ghost btn-block" onclick="Auth.logout()">🚪 登出帳號</button>
+      <div class="section-title"><h2>資料</h2></div>
+      <button class="btn btn-ghost btn-block" style="color:#a1503e;" onclick="App.clearAllData()">🗑️ 清空所有資料</button>
+      <div style="height:20px;"></div>
+    </div>
+
+    <div class="bottom-nav" id="bottomNav"></div>
+    <button class="fab" id="fabBtn" onclick="App.onFab()">+</button>
+  </div>
+</div>
+
+<!-- ====== MODAL SHEET ====== -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)App.closeSheet()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/home.js"></script>
+<script src="js/daily.js"></script>
+<script src="js/money.js"></script>
+<script src="js/items.js"></script>
+<script src="js/articles.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
