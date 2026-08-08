@@ -64,20 +64,35 @@ const Money = {
   openPocketForm(editId){
     const p = editId ? State.pockets.find(x=>x.id===editId) : null;
     const title = p ? '編輯存錢處' : '新增存錢處';
+    const icons = [
+      {v:'ph ph-wallet', l:'錢包'}, {v:'ph ph-bank', l:'銀行'}, {v:'ph ph-credit-card', l:'信用卡'},
+      {v:'ph ph-piggy-bank', l:'撲滿'}, {v:'ph ph-currency-circle-dollar', l:'錢幣'},
+      {v:'ph ph-shopping-bag', l:'購物袋'}, {v:'ph ph-storefront', l:'店面'},
+      {v:'ph ph-gift', l:'禮物'}, {v:'ph ph-globe', l:'旅遊'}, {v:'ph ph-heart', l:'愛心'}
+    ];
+    const currentIcon = p ? p.icon : 'ph ph-wallet';
     App.openSheet(`
       <div class="sheet-head"><h3>${title}</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="field"><label>名稱</label><input id="pName" placeholder="例如：悠遊卡" value="${p?esc(p.name):''}"></div>
-      <div class="row2">
-        <div class="field"><label>圖示</label><input id="pIcon" placeholder="ph ph-wallet" value="${p?p.icon:'ph ph-wallet'}"></div>
-        <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0" value="${p?p.balance:''}"></div>
+      <div class="field"><label>圖示</label>
+        <div class="icon-picker" id="iconPicker">
+          ${icons.map(i=>`<div class="icon-opt ${i.v===currentIcon?'sel':''}" data-icon="${i.v}" onclick="Money.pickIcon(this,'${i.v}')"><i class="${i.v}"></i><span>${i.l}</span></div>`).join('')}
+        </div>
       </div>
+      <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0" value="${p?p.balance:''}"></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.savePocket('${editId||''}')">${p?'儲存':'新增'}</button>
     `);
   },
 
+  pickIcon(el, icon){
+    document.querySelectorAll('#iconPicker .icon-opt').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+  },
+
   savePocket(editId){
     const name = document.getElementById('pName').value.trim(); if(!name) return;
-    const icon = document.getElementById('pIcon').value.trim()||'ph ph-wallet';
+    const selIcon = document.querySelector('#iconPicker .icon-opt.sel');
+    const icon = selIcon ? selIcon.dataset.icon : 'ph ph-wallet';
     const balance = parseFloat(document.getElementById('pBal').value)||0;
     if(editId){
       const p = State.pockets.find(x=>x.id===editId);

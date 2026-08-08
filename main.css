@@ -268,6 +268,18 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 .pocket-card:hover .pocket-actions{opacity:1;}
 .pocket-actions .btn-text{background:none; border:none; cursor:pointer; padding:2px; color:var(--ink-soft); font-size:14px;}
 .pocket-actions .btn-text:hover{color:var(--ink);}
+
+/* Icon Picker */
+.icon-picker{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
+.icon-opt{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:8px 10px; border-radius:10px; border:1.5px solid var(--line);
+  background:var(--card); cursor:pointer; min-width:60px; transition:all .15s;
+}
+.icon-opt i{font-size:20px; color:var(--ink-soft);}
+.icon-opt span{font-size:10px; color:var(--ink-soft);}
+.icon-opt:hover{border-color:var(--c-money); background:var(--c-money-bg);}
+.icon-opt.sel{border-color:var(--c-money); background:var(--c-money-bg); box-shadow:0 0 0 2px var(--c-money);}
 .tx-row{display:flex; align-items:center; gap:10px;}
 .tx-ic{width:38px;height:38px;border-radius:11px; display:flex;align-items:center;justify-content:center; font-size:17px; flex-shrink:0;}
 .tx-ic i{font-size:17px;}
