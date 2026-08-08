@@ -375,12 +375,16 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 .mon-cell .dots i{width:4px;height:4px;border-radius:50%;}
 
 .day-panel{margin-top:16px;}
-.todo-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
+.todo-row{display:flex; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid var(--line);}
 .todo-row:last-child{border-bottom:none;}
 .chk{width:20px;height:20px;border-radius:7px; border:1.5px solid var(--line); flex-shrink:0; cursor:pointer; display:flex;align-items:center;justify-content:center; font-size:12px;}
 .chk.done{background:var(--ink); border-color:var(--ink); color:var(--paper);}
 .todo-row .t{flex:1; font-size:13.5px;}
 .todo-row .t.done{text-decoration:line-through; opacity:.5;}
+.todo-edit,.todo-del{color:var(--ink-soft); cursor:pointer; font-size:14px; opacity:0; transition:opacity .15s;}
+.todo-row:hover .todo-edit,.todo-row:hover .todo-del{opacity:1;}
+.todo-edit:hover{color:var(--c-money);}
+.todo-del:hover{color:#a1503e;}
 .mini-tag{font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px;}
 .add-todo-row{display:flex; gap:8px; margin-top:12px;}
 

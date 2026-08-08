@@ -100,7 +100,8 @@ const Calendar = {
       <div class="todo-row">
         <div class="chk ${t.done?'done':''}" onclick="Calendar.toggleTodo('${this.selDate}','${t.id}')">${t.done?'✓':''}</div>
         <div class="t ${t.done?'done':''}">${esc(t.text)}</div>
-        <span style="color:var(--ink-soft); cursor:pointer; font-size:12px;" onclick="Calendar.deleteTodo('${this.selDate}','${t.id}')">✕</span>
+        <span class="todo-edit" onclick="Calendar.editTodo('${this.selDate}','${t.id}')" title="編輯"><i class="ph ph-pencil-simple"></i></span>
+        <span class="todo-del" onclick="Calendar.deleteTodo('${this.selDate}','${t.id}')" title="刪除"><i class="ph ph-x"></i></span>
       </div>`).join('');
   },
 
@@ -115,6 +116,16 @@ const Calendar = {
   toggleTodo(ds,id){
     const t=(State.todos[ds]||[]).find(x=>x.id===id);
     if(t){t.done=!t.done; save('todos', State.todos); this.render(); App.render();}
+  },
+
+  editTodo(ds,id){
+    const t=(State.todos[ds]||[]).find(x=>x.id===id);
+    if(!t) return;
+    const newText = prompt('編輯代辦事項', t.text);
+    if(newText!==null && newText.trim()){
+      t.text = newText.trim();
+      save('todos', State.todos); this.render(); App.render();
+    }
   },
 
   deleteTodo(ds,id){
