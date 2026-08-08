@@ -28,7 +28,7 @@ const Money = {
     const ps = document.getElementById('pocketScroll');
     ps.innerHTML = State.pockets.map(p=>`
       <div class="pocket-card">
-        <div class="nm">${p.icon} ${esc(p.name)}</div>
+        <div class="nm"><i class="${p.icon}"></i> ${esc(p.name)}</div>
         <div class="bal">NT$${p.balance.toLocaleString()}</div>
         <div class="pocket-actions">
           <button class="btn-text" onclick="Money.openPocketForm('${p.id}')" title="編輯"><i class="ph ph-pencil-simple"></i></button>
