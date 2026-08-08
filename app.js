@@ -22,6 +22,7 @@ const App = {
     document.getElementById('view-login').classList.remove('active');
     document.getElementById('shell').style.display='block';
     document.documentElement.setAttribute('data-theme', State.theme==='default'?'':State.theme);
+    applyModuleColors();
 
     if(State.user.picture){
       document.getElementById('avatarImg').src = State.user.picture;

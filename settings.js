@@ -23,6 +23,16 @@ const Settings = {
     const tr = document.getElementById('themeRow');
     tr.innerHTML = THEMES.map(t=>`<div class="theme-swatch ${State.theme===t.k?'sel':''}" title="${t.label}" style="background:linear-gradient(135deg, ${t.c1} 50%, ${t.c2} 50%);" onclick="Settings.setTheme('${t.k}')"></div>`).join('');
 
+    // Module colors
+    const mc = document.getElementById('moduleColorRow');
+    mc.innerHTML = Object.keys(DEFAULT_COLORS).map(k=>{
+      const c = State.colors[k];
+      return `<div class="color-pick-row">
+        <span class="color-pick-label"><i class="${NAV_META[k]?.icon||''}"></i> ${COLOR_LABELS[k]}</span>
+        <input type="color" class="color-pick-input" value="${c}" onchange="Settings.setModuleColor('${k}',this.value)">
+      </div>`;
+    }).join('');
+
     const ol = document.getElementById('orderList');
     ol.innerHTML = State.order.map((k,i)=>{
       const m = NAV_META[k];
@@ -40,6 +50,21 @@ const Settings = {
     State.theme=k;
     save('theme',k);
     document.documentElement.setAttribute('data-theme', k==='default'?'':k);
+    applyModuleColors();
+    this.render();
+  },
+
+  setModuleColor(module, color){
+    State.colors[module] = color;
+    save('colors', State.colors);
+    applyModuleColors();
+    this.render();
+  },
+
+  resetModuleColors(){
+    State.colors = {...DEFAULT_COLORS};
+    save('colors', State.colors);
+    applyModuleColors();
     this.render();
   },
 

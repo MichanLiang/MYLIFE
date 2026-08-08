@@ -8,7 +8,7 @@ const LS = {
   items:'mylife_items', chores:'mylife_chores', articles:'mylife_articles',
   todos:'mylife_todos', budget:'mylife_budget', lists:'mylife_lists',
   dailyGoals:'mylife_dailyGoals', reviews:'mylife_reviews',
-  calReviews:'mylife_calReviews'
+  calReviews:'mylife_calReviews', colors:'mylife_colors'
 };
 
 function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
@@ -48,6 +48,22 @@ function dateRange(start, end){
 /* ---- Constants ---- */
 const MOODS = ['😊','😌','😴','😤','😢','🤩','😐'];
 
+const DEFAULT_COLORS = {
+  daily:'#6F8F63',
+  money:'#4E6E8E',
+  item:'#B8842E',
+  note:'#8A5578',
+  cal:'#a15a3e'
+};
+
+const COLOR_LABELS = {
+  daily:'日常筆記',
+  money:'記帳',
+  item:'消耗品',
+  note:'文章筆記',
+  cal:'行事曆'
+};
+
 const TBLOCK_CATS = [
   {k:'work', label:'工作/課業', color:'#4E6E8E'},
   {k:'rest', label:'休息', color:'#6F8F63'},
@@ -82,12 +98,46 @@ const State = {
   lists: load(LS.lists, [{id:'default', name:'預設清單'}]),
   dailyGoals: load(LS.dailyGoals, {}),
   reviews: load(LS.reviews, {}),
-  calReviews: load(LS.calReviews, {})
+  calReviews: load(LS.calReviews, {}),
+  colors: load(LS.colors, {...DEFAULT_COLORS})
 };
 
 function saveState(key){ save(LS[key], State[key]); }
 function pocketById(id){ return State.pockets.find(p=>p.id===id); }
 function listById(id){ return State.lists.find(l=>l.id===id); }
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function lighten(hex, pct){
+  const {r,g,b}=hexToRgb(hex);
+  return rgbToHex(
+    Math.round(r+(255-r)*pct),
+    Math.round(g+(255-g)*pct),
+    Math.round(b+(255-b)*pct)
+  );
+}
+
+function applyModuleColors(){
+  const c=State.colors;
+  const root=document.documentElement;
+  root.style.setProperty('--c-daily', c.daily);
+  root.style.setProperty('--c-daily-bg', lighten(c.daily, 0.75));
+  root.style.setProperty('--c-money', c.money);
+  root.style.setProperty('--c-money-bg', lighten(c.money, 0.75));
+  root.style.setProperty('--c-item', c.item);
+  root.style.setProperty('--c-item-bg', lighten(c.item, 0.75));
+  root.style.setProperty('--c-note', c.note);
+  root.style.setProperty('--c-note-bg', lighten(c.note, 0.75));
+  root.style.setProperty('--c-cal', c.cal);
+  root.style.setProperty('--c-cal-bg', lighten(c.cal, 0.75));
+}
 
 /* ---- NAV ---- */
 const NAV_META = {
