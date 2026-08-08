@@ -22,9 +22,6 @@ const DB = {
 
   /* ---- Save single key ---- */
   save(key, val){
-    // Always save to localStorage as backup
-    save(LS[key], val);
-    
     // Sync to Firebase
     const ref = this.userRef();
     if(ref){

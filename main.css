@@ -263,7 +263,7 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 }
 .pocket-card .nm{font-size:12px; color:var(--ink-soft); font-weight:700;}
 .pocket-card .bal{font-family:"Fraunces",serif; font-size:20px; font-weight:700; margin-top:4px;}
-.pocket-card.add{display:flex; align-items:center; justify-content:center; color:var(--ink-soft); cursor:pointer; border-style:dashed;}
+.pocket-card.add{display:flex; align-items:center; justify-content:center; color:var(--ink-soft); cursor:pointer; border-style:dashed; min-height:72px; font-weight:600;}
 .pocket-card .pocket-actions{position:absolute; top:8px; right:8px; display:flex; gap:2px; opacity:0; transition:opacity .15s;}
 .pocket-card:hover .pocket-actions{opacity:1;}
 .pocket-actions .btn-text{background:none; border:none; cursor:pointer; padding:2px; color:var(--ink-soft); font-size:14px;}
