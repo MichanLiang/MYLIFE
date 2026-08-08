@@ -83,8 +83,8 @@ i[class^="ph"]{font-style:normal;}
 }
 
 /* ---- Views ---- */
-.view{display:none; padding:0 20px 10px; animation:fade .25s ease;}
-.view.active{display:block;}
+.view{display:none; padding:0 20px 10px;}
+.view.active{display:block; animation:fade .25s ease;}
 @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
 
 /* ---- Home ---- */
