@@ -17,6 +17,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 
 const Auth = {
   init(){
+    DB.init();
     fbAuth.onAuthStateChanged(user => {
       if(user && !State.user){
         this.handleFirebaseUser(user);
@@ -43,11 +44,18 @@ const Auth = {
       picture: user.photoURL || null
     };
     save('user', State.user);
-    App.showShell();
+    
+    // Set DB uid and load data from Firebase
+    DB.setUid(user.uid);
+    DB.loadAll(()=>{
+      initDefaultPockets();
+      App.showShell();
+    });
   },
 
   logout(){
-    if(!confirm('確定要登出嗎？資料仍會保留在此裝置。')) return;
+    if(!confirm('確定要登出嗎？')) return;
+    DB.clearUser();
     fbAuth.signOut().then(()=>{
       State.user = null;
       save('user', null);

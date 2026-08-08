@@ -12,7 +12,13 @@ const LS = {
 };
 
 function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
-function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function save(key, val){ 
+  localStorage.setItem(key, JSON.stringify(val));
+  // Sync to Firebase if DB is ready
+  if(typeof DB !== 'undefined' && DB.uid){
+    DB.save(key, val);
+  }
+}
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function todayStr(){ return fmtDate(new Date()); }
 function fmtDate(d){ const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
