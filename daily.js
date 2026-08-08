@@ -189,7 +189,7 @@ const Daily = {
         <h3 style="font-size:15px; margin-bottom:8px;">統計摘要</h3>
         <div style="font-size:13px; color:var(--ink-soft);">
           共 ${State.daily.length} 篇筆記<br>
-          ${TBLOCK_CATS.filter(c=>c.k!=='none').map(c=>`${c.label}：${counts[c.k]} 次`).join('<br>')}
+          ${TBLOCK_CATS.filter(c=>c.k!=='none').map(c=>`${c.label}：${counts[c.k]} 小時`).join('<br>')}
         </div>
       </div>
     `;
