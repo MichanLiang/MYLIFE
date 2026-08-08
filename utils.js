@@ -85,10 +85,7 @@ const State = {
   theme: load(LS.theme, 'default'),
   order: load(LS.order, ['home','calendar','daily','money','items','articles']),
   daily: load(LS.daily, []),
-  pockets: load(LS.pockets, [
-    {id:uid(), name:'錢包', balance:1500, icon:'ph ph-wallet'},
-    {id:uid(), name:'銀行帳戶', balance:20000, icon:'ph ph-bank'}
-  ]),
+  pockets: load(LS.pockets, []),
   money: load(LS.money, []),
   items: load(LS.items, []),
   chores: load(LS.chores, []),
@@ -101,6 +98,16 @@ const State = {
   calReviews: load(LS.calReviews, {}),
   colors: load(LS.colors, {...DEFAULT_COLORS})
 };
+
+function initDefaultPockets(){
+  if(State.pockets.length === 0){
+    State.pockets = [
+      {id:uid(), name:'錢包', balance:1500, icon:'ph ph-wallet'},
+      {id:uid(), name:'銀行帳戶', balance:20000, icon:'ph ph-bank'}
+    ];
+    save('pockets', State.pockets);
+  }
+}
 
 function saveState(key){ save(LS[key], State[key]); }
 function pocketById(id){ return State.pockets.find(p=>p.id===id); }

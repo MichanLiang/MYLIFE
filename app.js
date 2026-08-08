@@ -22,6 +22,7 @@ const App = {
     document.getElementById('view-login').classList.remove('active');
     document.getElementById('shell').style.display='block';
     document.documentElement.setAttribute('data-theme', State.theme==='default'?'':State.theme);
+    initDefaultPockets();
     applyModuleColors();
 
     if(State.user.picture){
@@ -40,7 +41,7 @@ const App = {
     document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
     document.getElementById('view-'+v).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active', el.dataset.v===v));
-    document.getElementById('fabBtn').style.display = ['home','settings'].includes(v) ? 'none' : 'flex';
+    document.getElementById('fabBtn').style.display = ['home','settings','calendar'].includes(v) ? 'none' : 'flex';
     this.render();
     window.scrollTo(0,0);
   },
@@ -71,12 +72,10 @@ const App = {
 
   onFab(){
     if(this.curView==='daily'){
-      Daily.draftBlocks={}; Daily.selectedMood='😊';
+      Daily.todayEntryId = null;
+      Daily.draftBlocks={};
+      Daily.selectedMood='😊';
       Daily.setTab('plan');
-      setTimeout(()=>{
-        const entryCard = document.querySelector('#dailyPlanPane .entry-card');
-        if(entryCard) entryCard.scrollIntoView({behavior:'smooth', block:'start'});
-      },100);
     }
     else if(this.curView==='money') Money.openMoneyForm();
     else if(this.curView==='items'){

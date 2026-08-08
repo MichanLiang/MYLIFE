@@ -8,6 +8,7 @@ const Daily = {
   draftBlocks: {},
   selectedMood: '😊',
   activeCat: 'work',
+  todayEntryId: null,
 
   setTab(t){
     this.tab = t;
@@ -31,6 +32,19 @@ const Daily = {
   renderPlan(){
     const today = todayStr();
     const el = document.getElementById('dailyPlanPane');
+    
+    // Load today's entry or create empty
+    const existing = State.daily.find(e=>e.date===today);
+    if(existing){
+      this.todayEntryId = existing.id;
+      this.draftBlocks = existing.blocks ? {...existing.blocks} : {};
+      this.selectedMood = existing.mood || '😊';
+    } else {
+      this.todayEntryId = null;
+      this.draftBlocks = {};
+      this.selectedMood = '😊';
+    }
+    
     el.innerHTML = `
       <div class="section-title"><h2>時間軸記錄</h2></div>
       <div class="card entry-card">
@@ -43,19 +57,24 @@ const Daily = {
             ${MOODS.map(m=>`<div class="mood-opt ${m===this.selectedMood?'sel':''}" data-m="${m}" onclick="Daily.pickMood(this,'${m}')">${m}</div>`).join('')}
           </div>
         </div>
-        <div class="field"><label>寫點什麼</label><textarea id="dailyText" placeholder="今天發生了什麼有趣的事？"></textarea></div>
+        <div class="field"><label>寫點什麼</label><textarea id="dailyText" placeholder="今天發生了什麼有趣的事？" oninput="Daily.autoSave()">${existing?esc(existing.text):''}</textarea></div>
         <div class="field"><label>時間軸（點選填色，6:00–22:00）</label>
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
             ${TBLOCK_CATS.filter(c=>c.k!=='none').map(c=>`<button type="button" class="pill" data-cat="${c.k}" style="background:${c.color}22; color:${c.color}; border:1px solid ${c.color}; cursor:pointer;${c.k===this.activeCat?' outline:2px solid var(--ink);':''}" onclick="Daily.setActiveCat(this,'${c.k}')">${c.label}</button>`).join('')}
           </div>
           <div class="tblock-grid" id="formBlocks">
-            ${tblockHours().map(h=>`<div class="tblock" data-h="${h}" onclick="Daily.paintBlock(${h})">${h}</div>`).join('')}
+            ${tblockHours().map(h=>{
+              const cat = this.draftBlocks[h] || 'none';
+              const catObj = TBLOCK_CATS.find(c=>c.k===cat);
+              const bg = catObj && catObj.k!=='none' ? catObj.color+'33' : '';
+              const bc = catObj && catObj.k!=='none' ? catObj.color : '';
+              return `<div class="tblock" data-h="${h}" style="${bg?'background:'+bg+';':''}${bc?'border-color:'+bc+';':''}" onclick="Daily.paintBlock(${h})">${h}</div>`;
+            }).join('')}
           </div>
           <div class="legend">
             ${TBLOCK_CATS.filter(c=>c.k!=='none').map(c=>`<span><i style="background:${c.color}"></i>${c.label}</span>`).join('')}
           </div>
         </div>
-        <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Daily.saveEntry()">儲存筆記</button>
       </div>
     `;
   },
@@ -72,6 +91,7 @@ const Daily = {
     el.classList.add('sel');
     this.selectedMood = m;
     document.getElementById('dailyMoodDisplay').textContent = m;
+    this.autoSave();
   },
 
   setActiveCat(el, k){
@@ -84,19 +104,49 @@ const Daily = {
     this.draftBlocks[h] = this.draftBlocks[h]===this.activeCat ? 'none' : this.activeCat;
     const cat = TBLOCK_CATS.find(c=>c.k===this.draftBlocks[h]);
     const cell = document.querySelector(`#formBlocks .tblock[data-h="${h}"]`);
-    cell.style.background = cat.k==='none' ? 'var(--paper-2)' : cat.color+'33';
-    cell.style.borderColor = cat.k==='none' ? 'var(--line)' : cat.color;
+    cell.style.background = cat.k==='none' ? '' : cat.color+'33';
+    cell.style.borderColor = cat.k==='none' ? '' : cat.color;
+    this.autoSave();
   },
 
-  saveEntry(){
-    const text = document.getElementById('dailyText').value.trim();
-    State.daily.unshift({
-      id:uid(), date:todayStr(), mood:this.selectedMood, text,
+  autoSave(){
+    const textEl = document.getElementById('dailyText');
+    if(!textEl) return;
+    const text = textEl.value.trim();
+    const today = todayStr();
+    
+    if(!text && Object.keys(this.draftBlocks).filter(k=>this.draftBlocks[k]!=='none').length===0){
+      // Nothing to save, remove entry if exists
+      if(this.todayEntryId){
+        State.daily = State.daily.filter(e=>e.id!==this.todayEntryId);
+        this.todayEntryId = null;
+        save('daily', State.daily);
+        Home.render();
+      }
+      return;
+    }
+    
+    const entry = {
+      id: this.todayEntryId || uid(),
+      date: today,
+      mood: this.selectedMood,
+      text,
       blocks:{...this.draftBlocks}
-    });
+    };
+    
+    if(this.todayEntryId){
+      // Update existing
+      const idx = State.daily.findIndex(e=>e.id===this.todayEntryId);
+      if(idx>=0) State.daily[idx] = entry;
+    } else {
+      // Create new
+      State.daily.unshift(entry);
+      this.todayEntryId = entry.id;
+    }
+    
     State.daily.sort((a,b)=>b.date.localeCompare(a.date));
     save('daily', State.daily);
-    this.render();
+    Home.render();
   },
 
   deleteEntry(id){
