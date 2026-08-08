@@ -30,21 +30,8 @@ const Daily = {
   /* ---- Plan Tab ---- */
   renderPlan(){
     const today = todayStr();
-    const goals = State.dailyGoals[today] || { year:'', month:'', day:'' };
     const el = document.getElementById('dailyPlanPane');
     el.innerHTML = `
-      <div class="goal-box">
-        <h4><i class="ph ph-target"></i> 年度目標</h4>
-        <textarea id="goalYear" placeholder="今年想達成什麼？" onblur="Daily.saveGoal('year',this.value)">${esc(goals.year)}</textarea>
-      </div>
-      <div class="goal-box">
-        <h4><i class="ph ph-clipboard-text"></i> 本月目標</h4>
-        <textarea id="goalMonth" placeholder="這個月想完成什麼？" onblur="Daily.saveGoal('month',this.value)">${esc(goals.month)}</textarea>
-      </div>
-      <div class="goal-box">
-        <h4><i class="ph ph-pencil-simple"></i> 今日目標</h4>
-        <textarea id="goalDay" placeholder="今天要做什麼？" onblur="Daily.saveGoal('day',this.value)">${esc(goals.day)}</textarea>
-      </div>
       <div class="section-title"><h2>時間軸記錄</h2></div>
       <div class="card entry-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -88,7 +75,7 @@ const Daily = {
   },
 
   setActiveCat(el, k){
-    document.querySelectorAll('#sheet .pill[data-cat]').forEach(e=>e.style.outline='none');
+    document.querySelectorAll('#dailyPlanPane .pill[data-cat]').forEach(e=>e.style.outline='none');
     el.style.outline='2px solid var(--ink)';
     this.activeCat = k;
   },

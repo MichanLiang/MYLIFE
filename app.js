@@ -70,7 +70,14 @@ const App = {
   },
 
   onFab(){
-    if(this.curView==='daily'){ Daily.draftBlocks={}; Daily.selectedMood='😊'; Daily.render(); }
+    if(this.curView==='daily'){
+      Daily.draftBlocks={}; Daily.selectedMood='😊';
+      Daily.setTab('plan');
+      setTimeout(()=>{
+        const entryCard = document.querySelector('#dailyPlanPane .entry-card');
+        if(entryCard) entryCard.scrollIntoView({behavior:'smooth', block:'start'});
+      },100);
+    }
     else if(this.curView==='money') Money.openMoneyForm();
     else if(this.curView==='items'){
       if(Items.tab==='items') Items.openItemForm();

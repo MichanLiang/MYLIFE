@@ -30,6 +30,10 @@ const Money = {
       <div class="pocket-card">
         <div class="nm">${p.icon} ${esc(p.name)}</div>
         <div class="bal">NT$${p.balance.toLocaleString()}</div>
+        <div class="pocket-actions">
+          <button class="btn-text" onclick="Money.openPocketForm('${p.id}')" title="編輯"><i class="ph ph-pencil-simple"></i></button>
+          <button class="btn-text" onclick="Money.deletePocket('${p.id}')" title="刪除"><i class="ph ph-trash"></i></button>
+        </div>
       </div>
     `).join('') + `<div class="pocket-card add" onclick="Money.openPocketForm()">＋ 新增存錢處</div>`;
   },
@@ -57,24 +61,37 @@ const Money = {
     }).join('');
   },
 
-  openPocketForm(){
+  openPocketForm(editId){
+    const p = editId ? State.pockets.find(x=>x.id===editId) : null;
+    const title = p ? '編輯存錢處' : '新增存錢處';
     App.openSheet(`
-      <div class="sheet-head"><h3>新增存錢處</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div class="field"><label>名稱</label><input id="pName" placeholder="例如：悠遊卡"></div>
+      <div class="sheet-head"><h3>${title}</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="field"><label>名稱</label><input id="pName" placeholder="例如：悠遊卡" value="${p?esc(p.name):''}"></div>
       <div class="row2">
-        <div class="field"><label>圖示</label><input id="pIcon" placeholder="ph ph-wallet" value="ph ph-wallet"></div>
-        <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0"></div>
+        <div class="field"><label>圖示</label><input id="pIcon" placeholder="ph ph-wallet" value="${p?p.icon:'ph ph-wallet'}"></div>
+        <div class="field"><label>目前餘額</label><input id="pBal" type="number" placeholder="0" value="${p?p.balance:''}"></div>
       </div>
-      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.savePocket()">新增</button>
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.savePocket('${editId||''}')">${p?'儲存':'新增'}</button>
     `);
   },
 
-  savePocket(){
+  savePocket(editId){
     const name = document.getElementById('pName').value.trim(); if(!name) return;
     const icon = document.getElementById('pIcon').value.trim()||'ph ph-wallet';
     const balance = parseFloat(document.getElementById('pBal').value)||0;
-    State.pockets.push({id:uid(), name, icon, balance});
+    if(editId){
+      const p = State.pockets.find(x=>x.id===editId);
+      if(p){ p.name=name; p.icon=icon; p.balance=balance; }
+    } else {
+      State.pockets.push({id:uid(), name, icon, balance});
+    }
     save('pockets', State.pockets); App.closeSheet(); this.render();
+  },
+
+  deletePocket(id){
+    if(!confirm('刪除此存錢處？相關記帳紀錄不會被刪除')) return;
+    State.pockets = State.pockets.filter(p=>p.id!==id);
+    save('pockets', State.pockets); this.render();
   },
 
   openMoneyForm(){

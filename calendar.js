@@ -31,7 +31,6 @@ const Calendar = {
 
     document.getElementById('dayPanelTitle').textContent = this.selDate===todayStr() ? '今天 · '+niceDate(this.selDate) : niceDate(this.selDate);
     this.renderDayPanel();
-    this.renderReviews();
   },
 
   dayHasEvents(dstr){
@@ -121,78 +120,5 @@ const Calendar = {
   deleteTodo(ds,id){
     State.todos[ds] = (State.todos[ds]||[]).filter(x=>x.id!==id);
     save('todos', State.todos); this.render();
-  },
-
-  /* ---- Weekly/Monthly Review ---- */
-  renderReviews(){
-    // Weekly review
-    const weekStart = getWeekStart(new Date());
-    const weekKey = 'calweek-'+fmtDate(weekStart);
-    const weekReview = State.calReviews[weekKey] || '';
-
-    const weekStats = this.getWeekStats(weekStart);
-    document.getElementById('calWeekReview').innerHTML = `
-      <div class="cal-review-card">
-        <div class="summary" style="margin-bottom:8px;">
-          <i class="ph ph-check-circle"></i> 代辦完成 ${weekStats.todosDone}/${weekStats.todosTotal} 項 ·
-          新增 ${weekStats.dailyCount} 篇日記 ·
-          記帳 ${weekStats.moneyTx} 筆
-        </div>
-        <textarea placeholder="這週的反思…" onblur="Calendar.saveCalReview('${weekKey}',this.value)">${esc(weekReview)}</textarea>
-      </div>
-    `;
-
-    // Monthly review
-    const now = new Date();
-    const monthKey = 'calmonth-'+now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    const monthReview = State.calReviews[monthKey] || '';
-    const monthStats = this.getMonthStats(now.getFullYear(), now.getMonth());
-
-    document.getElementById('calMonthReview').innerHTML = `
-      <div class="cal-review-card">
-        <div class="summary" style="margin-bottom:8px;">
-          <i class="ph ph-check-circle"></i> 代辦完成 ${monthStats.todosDone}/${monthStats.todosTotal} 項 ·
-          新增 ${monthStats.dailyCount} 篇日記 ·
-          記帳 ${monthStats.moneyTx} 筆 ·
-          支出 NT$${monthStats.totalOut.toLocaleString()}
-        </div>
-        <textarea placeholder="這個月的反思…" onblur="Calendar.saveCalReview('${monthKey}',this.value)">${esc(monthReview)}</textarea>
-      </div>
-    `;
-  },
-
-  getWeekStats(start){
-    const dates = dateRange(start, new Date(start.getTime()+6*86400000));
-    let todosTotal=0, todosDone=0;
-    dates.forEach(d=>{
-      const todos = State.todos[d]||[];
-      todosTotal += todos.length;
-      todosDone += todos.filter(t=>t.done).length;
-    });
-    const dailyCount = State.daily.filter(e=>dates.includes(e.date)).length;
-    const moneyTx = State.money.filter(t=>dates.includes(t.date)).length;
-    return { todosTotal, todosDone, dailyCount, moneyTx };
-  },
-
-  getMonthStats(year, month){
-    const prefix = year+'-'+String(month+1).padStart(2,'0');
-    let todosTotal=0, todosDone=0;
-    Object.keys(State.todos).forEach(k=>{
-      if(k.startsWith(prefix)){
-        const todos = State.todos[k];
-        todosTotal += todos.length;
-        todosDone += todos.filter(t=>t.done).length;
-      }
-    });
-    const dailyCount = State.daily.filter(e=>e.date.startsWith(prefix)).length;
-    const monthTx = State.money.filter(t=>t.date.startsWith(prefix));
-    const moneyTx = monthTx.length;
-    const totalOut = monthTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
-    return { todosTotal, todosDone, dailyCount, moneyTx, totalOut };
-  },
-
-  saveCalReview(key, value){
-    State.calReviews[key] = value;
-    save('calReviews', State.calReviews);
   }
 };
