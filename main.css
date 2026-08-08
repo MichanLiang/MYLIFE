@@ -167,12 +167,12 @@ i[class^="ph"]{font-style:normal;}
 input,textarea,select{
   width:100%; padding:11px 13px; border-radius:12px; border:1.5px solid var(--line);
   background:var(--card); color:var(--ink); font-size:14px; font-family:inherit;
+  height:42px; box-sizing:border-box;
 }
-textarea{resize:vertical; min-height:70px;}
-label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; margin:14px 0 6px;}
-.field:first-child label{margin-top:0;}
-.row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start;}
-.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; align-items:start;}
+textarea{resize:vertical; min-height:70px; height:auto;}
+label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; margin-bottom:6px;}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:end;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; align-items:end;}
 
 .card{
   background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
