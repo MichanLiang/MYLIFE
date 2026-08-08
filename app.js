@@ -12,13 +12,14 @@ const App = {
   boot(){
     if(!State.user){
       // Not logged in, show login page
+      document.getElementById('app').style.visibility='visible';
+      document.body.style.overflow='';
       document.getElementById('view-login').classList.add('active');
       Auth.init();
       return;
     }
     
     // User exists in localStorage, show shell immediately
-    // Hide login page completely
     document.getElementById('view-login').style.display='none';
     Auth.init();
     this.showShell();
@@ -28,6 +29,8 @@ const App = {
     document.getElementById('view-login').classList.remove('active');
     document.getElementById('view-login').style.display='none';
     document.getElementById('shell').style.display='block';
+    document.getElementById('app').style.visibility='visible';
+    document.body.style.overflow='';
     document.documentElement.setAttribute('data-theme', State.theme==='default'?'':State.theme);
     initDefaultPockets();
     applyModuleColors();
