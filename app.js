@@ -10,11 +10,15 @@ const App = {
   },
 
   boot(){
+    // Always init auth first to check Firebase auth state
+    Auth.init();
+    
     if(!State.user){
       document.getElementById('view-login').classList.add('active');
-      Auth.init();
       return;
     }
+    
+    // User exists in localStorage, show shell immediately
     this.showShell();
   },
 
