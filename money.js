@@ -112,6 +112,8 @@ const Money = {
   openMoneyForm(){
     if(State.pockets.length===0){ alert('請先新增一個存錢處'); this.openPocketForm(); return; }
     this.txType = 'out';
+    this.selPocket = State.pockets[0].id;
+    this.selCat = MONEY_CATS[0].k;
     App.openSheet(`
       <div class="sheet-head"><h3>新增記帳</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="tabs" id="typeTabs">
@@ -122,11 +124,31 @@ const Money = {
         <div class="field"><label>金額</label><input id="tAmt" type="number" placeholder="0"></div>
         <div class="field"><label>日期</label><input id="tDate" type="date" value="${todayStr()}"></div>
       </div>
-      <div class="field"><label>存錢處</label><select id="tPocket">${State.pockets.map(p=>`<option value="${p.id}">${p.icon} ${esc(p.name)}</option>`).join('')}</select></div>
-      <div class="field"><label>用途分類</label><select id="tCat">${MONEY_CATS.map(c=>`<option value="${c.k}">${c.ic} ${c.k}</option>`).join('')}</select></div>
+      <div class="field"><label>存錢處</label>
+        <div class="icon-picker" id="pocketPicker">
+          ${State.pockets.map(p=>`<div class="icon-opt ${p.id===this.selPocket?'sel':''}" data-id="${p.id}" onclick="Money.pickPocket(this,'${p.id}')"><i class="${p.icon}"></i><span>${esc(p.name)}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="field"><label>用途分類</label>
+        <div class="icon-picker" id="catPicker">
+          ${MONEY_CATS.map(c=>`<div class="icon-opt ${c.k===this.selCat?'sel':''}" data-k="${c.k}" onclick="Money.pickCat(this,'${c.k}')"><i class="${c.ic}"></i><span>${c.k}</span></div>`).join('')}
+        </div>
+      </div>
       <div class="field"><label>備註</label><input id="tNote" placeholder="選填"></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.saveMoney()">儲存</button>
     `);
+  },
+
+  pickPocket(el, id){
+    document.querySelectorAll('#pocketPicker .icon-opt').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+    this.selPocket = id;
+  },
+
+  pickCat(el, k){
+    document.querySelectorAll('#catPicker .icon-opt').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+    this.selCat = k;
   },
 
   setTxType(t){
@@ -137,8 +159,8 @@ const Money = {
   saveMoney(){
     const amount = parseFloat(document.getElementById('tAmt').value); if(!amount) return;
     const date = document.getElementById('tDate').value||todayStr();
-    const pocket = document.getElementById('tPocket').value;
-    const cat = document.getElementById('tCat').value;
+    const pocket = this.selPocket;
+    const cat = this.selCat;
     const note = document.getElementById('tNote').value.trim();
     State.money.unshift({id:uid(), type:this.txType, amount, date, pocket, cat, note});
     const p = pocketById(pocket);
