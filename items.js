@@ -5,6 +5,8 @@
 
 const Items = {
   tab: 'items',
+  viewMode: 'grid',
+  collapsed: {},
 
   setTab(t){
     this.tab = t;
@@ -42,9 +44,17 @@ const Items = {
       groups[lid].push(it);
     });
 
+    const isGrid = this.viewMode === 'grid';
+
     let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <span style="font-size:13px; color:var(--ink-soft);">共 ${State.items.length} 項</span>
-      <span style="font-size:12px; cursor:pointer; color:var(--c-item);" onclick="Items.openListManager()">管理清單 →</span>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:12px; cursor:pointer; color:var(--c-item);" onclick="Items.openListManager()">管理清單 →</span>
+        <div style="display:flex; gap:2px; background:var(--paper-2); border-radius:8px; padding:2px;">
+          <button class="view-toggle ${isGrid?'active':''}" onclick="Items.setViewMode('grid')"><i class="ph ph-squares-four"></i></button>
+          <button class="view-toggle ${!isGrid?'active':''}" onclick="Items.setViewMode('list')"><i class="ph ph-list"></i></button>
+        </div>
+      </div>
     </div>`;
 
     State.lists.forEach(list=>{
@@ -54,18 +64,49 @@ const Items = {
         const da=daysUntil(a.expiry), db=daysUntil(b.expiry);
         return (da===null?9999:da) - (db===null?9999:db);
       });
+      const collapsed = this.collapsed[list.id];
       html += `<div class="list-group">
-        <div class="list-group-header">
+        <div class="list-group-header" onclick="Items.toggleCollapse('${list.id}')" style="cursor:pointer;">
           <h3>${esc(list.name)} (${items.length})</h3>
+          <i class="ph ${collapsed?'ph-caret-right':'ph-caret-down'}" style="font-size:14px; color:var(--ink-soft);"></i>
         </div>
-        <div class="item-grid">
-          ${sorted.map(it=>this.renderItemCard(it)).join('')}
-        </div>
+        ${collapsed ? '' : `<div class="${isGrid?'item-grid':'item-list'}">
+          ${sorted.map(it=> isGrid ? this.renderItemCard(it) : this.renderItemRow(it)).join('')}
+        </div>`}
       </div>`;
     });
 
     el.innerHTML = html;
   },
+
+  setViewMode(mode){
+    this.viewMode = mode;
+    this.renderItems();
+  },
+
+  toggleCollapse(listId){
+    this.collapsed[listId] = !this.collapsed[listId];
+    this.renderItems();
+  },
+
+  renderItemRow(it){
+    const du = daysUntil(it.expiry);
+    let statusColor = '#6F8F63', statusTxt='狀況良好';
+    if(du!==null){
+      if(du<0){statusColor='#a1503e'; statusTxt='已過期';}
+      else if(du<=7){statusColor='#B8842E'; statusTxt=`剩 ${du} 天`;}
+      else{statusTxt=`剩 ${du} 天`;}
+    }
+    return `<div class="item-row" onclick="Items.openItemDetail('${it.id}')">
+      <div class="item-row-left">
+        <span class="item-row-icon"><i class="${it.icon||'ph ph-drop'}"></i></span>
+        <div class="item-row-info">
+          <span class="item-row-name">${esc(it.name)}</span>
+          <span class="item-row-sub">${esc(it.category||'一般')} · ${it.opened?'使用中':'未開封'}${it.quantity!==undefined?' · 庫存 '+it.quantity:''}</span>
+        </div>
+      </div>
+      <span class="item-row-status" style="color:${statusColor};">${statusTxt}</span>
+    </div>`;
 
   renderItemCard(it){
     const du = daysUntil(it.expiry);

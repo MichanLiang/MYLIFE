@@ -322,15 +322,35 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 .transfer-arrow{text-align:center; font-size:20px; color:var(--ink-soft); margin:8px 0;}
 
 /* ============================================================
-   ITEMS (consumables + chores)
-   ============================================================ */
+    ITEMS (consumables + chores)
+    ============================================================ */
 .item-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.item-list{display:flex; flex-direction:column; gap:6px;}
 .item-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:13px; box-shadow:var(--shadow);}
 .item-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
 .item-card .ic{font-size:24px; display:flex; align-items:center; justify-content:center;}
 .item-card h4{font-size:13.5px; margin:8px 0 3px;}
 .item-card .sub{font-size:11px; color:var(--ink-soft);}
 .item-card .qty{font-family:"Fraunces",serif; font-weight:700; font-size:16px; color:var(--c-item);}
+.item-row{
+  display:flex; align-items:center; justify-content:space-between; padding:10px 12px;
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  cursor:pointer; transition:background .15s;
+}
+.item-row:hover{background:var(--paper-2);}
+.item-row-left{display:flex; align-items:center; gap:10px; min-width:0; flex:1;}
+.item-row-icon{width:36px; height:36px; border-radius:10px; background:var(--c-item-bg); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.item-row-icon i{font-size:18px; color:var(--c-item);}
+.item-row-info{display:flex; flex-direction:column; min-width:0;}
+.item-row-name{font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.item-row-sub{font-size:11px; color:var(--ink-soft); margin-top:1px;}
+.item-row-status{font-size:11px; font-weight:700; flex-shrink:0; margin-left:8px;}
+.view-toggle{
+  width:28px; height:26px; border:none; border-radius:6px; background:transparent;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-soft); font-size:14px; transition:all .15s;
+}
+.view-toggle.active{background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,0.1);}
 .status-dot{width:8px;height:8px;border-radius:50%; display:inline-block;}
 .chore-row{display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--line);}
 .chore-row:last-child{border-bottom:none;}
