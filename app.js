@@ -85,6 +85,7 @@ const App = {
     else if(this.curView==='money') Money.render();
     else if(this.curView==='items') Items.render();
     else if(this.curView==='articles'){
+      Articles.init();
       Articles.renderTabs();
       Articles.render();
     }

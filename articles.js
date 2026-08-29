@@ -3,7 +3,11 @@
    ============================================================ */
 
 const Articles = {
-  filter: 'all',
+  filter: null,
+
+  init(){
+    if(!this.filter) this.filter = State.articleFolders[0]?.id || 'default';
+  },
 
   setFilter(f){
     this.filter = f;
@@ -21,7 +25,7 @@ const Articles = {
 
   render(){
     const el = document.getElementById('articlesList');
-    const list = State.articles.filter(a=>this.filter==='all'||a.folder===this.filter);
+    const list = State.articles.filter(a=>a.folder===this.filter);
     if(list.length===0){
       el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-file-text"></i></span>還沒有筆記</div>`;
       return;
@@ -156,7 +160,7 @@ const Articles = {
     });
     save('articleFolders', State.articleFolders);
     if(!State.articleFolders.find(f=>f.id===this.filter)){
-      this.filter = 'all';
+      this.filter = State.articleFolders[0]?.id || 'default';
     }
     App.closeSheet(); this.renderTabs(); this.render();
   }
