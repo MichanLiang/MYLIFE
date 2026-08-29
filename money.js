@@ -245,7 +245,7 @@ const Money = {
     const cats = State.budget.cats || {};
     const catRows = MONEY_CATS.filter(c=>c.k!=='其他').map(c=>{
       return `<div class="budget-cat-row">
-        <span style="font-size:13px;">${c.ic} ${c.k}</span>
+        <span style="font-size:13px;"><i class="${c.ic}" style="color:var(--ink-soft);"></i> ${c.k}</span>
         <input type="number" class="budget-cat-input" data-cat="${c.k}" value="${cats[c.k]||''}" placeholder="0" style="width:100px; padding:6px 8px; font-size:13px;">
       </div>`;
     }).join('');
