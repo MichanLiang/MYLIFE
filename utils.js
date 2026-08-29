@@ -52,7 +52,31 @@ function dateRange(start, end){
 }
 
 /* ---- Constants ---- */
-const MOODS = ['😊','😌','😴','😤','😢','🤩','😐'];
+const MOODS = [
+  { key:'happy',   icon:'ph ph-smiley',      label:'開心', color:'#D4923A' },
+  { key:'calm',    icon:'ph ph-sun-horizon',  label:'平靜', color:'#6F8F63' },
+  { key:'sleepy',  icon:'ph ph-moon-stars',   label:'想睡', color:'#7B6BA3' },
+  { key:'angry',   icon:'ph ph-fire',         label:'生氣', color:'#C25450' },
+  { key:'sad',     icon:'ph ph-cloud-rain',   label:'難過', color:'#5B8FA8' },
+  { key:'excited', icon:'ph ph-sparkle',      label:'興奮', color:'#D4783A' },
+  { key:'neutral', icon:'ph ph-smiley-meh',   label:'普通', color:'#9A9589' },
+];
+
+const MOOD_EMOJI_MAP = {
+  '😊':'happy','😌':'calm','😴':'sleepy','😤':'angry',
+  '😢':'sad','🤩':'excited','😐':'neutral'
+};
+function moodByKey(k){
+  if(!k) return MOODS[MOODS.length-1];
+  if(MOODS.find(m=>m.key===k)) return MOODS.find(m=>m.key===k);
+  const mapped = MOOD_EMOJI_MAP[k];
+  return mapped ? MOODS.find(m=>m.key===mapped) : MOODS[MOODS.length-1];
+}
+function moodIconHtml(key, size){
+  const m = moodByKey(key);
+  const sz = size || 20;
+  return `<i class="${m.icon}" style="font-size:${sz}px; color:${m.color};"></i>`;
+}
 
 const DEFAULT_COLORS = {
   daily:'#6F8F63',

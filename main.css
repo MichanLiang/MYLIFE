@@ -220,9 +220,21 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 /* ============================================================
    DAILY LIFE NOTES
    ============================================================ */
+/* ---- Mood Selector ---- */
 .mood-row{display:flex; gap:8px; flex-wrap:wrap;}
-.mood-opt{font-size:22px; padding:8px 10px; border-radius:12px; border:1.5px solid var(--line); background:var(--card); cursor:pointer;}
-.mood-opt.sel{background:var(--c-daily-bg); border-color:var(--c-daily);}
+.mood-opt{
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:10px 12px; border-radius:14px; border:1.5px solid var(--line);
+  background:var(--card); cursor:pointer; min-width:56px;
+  transition: all .2s ease;
+}
+.mood-opt i{font-size:22px; transition:transform .2s ease;}
+.mood-opt .mood-label{font-size:10px; font-weight:600; color:var(--ink-soft); transition:color .2s ease;}
+.mood-opt:hover{border-color:var(--ink-soft); transform:translateY(-2px);}
+.mood-opt:hover i{transform:scale(1.1);}
+.mood-opt.sel{background:var(--c-daily-bg); border-color:var(--c-daily); box-shadow:0 0 0 2px var(--c-daily-bg);}
+.mood-opt.sel i{transform:scale(1.1);}
+.mood-opt.sel .mood-label{color:var(--c-daily);}
 .tblock-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:5px; margin-top:6px;}
 .tblock{
   aspect-ratio:1; border-radius:7px; background:var(--paper-2); border:1px solid var(--line);
@@ -231,7 +243,7 @@ label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; mar
 .legend{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; font-size:11px; color:var(--ink-soft);}
 .legend span{display:inline-flex; align-items:center; gap:4px;}
 .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
-.entry-card .mood{font-size:22px;}
+.entry-card .mood{font-size:22px; display:flex; align-items:center;}
 .entry-card .txt{font-size:13.5px; margin-top:6px; line-height:1.6; white-space:pre-wrap;}
 .entry-card .d{font-size:11.5px; color:var(--ink-soft); font-weight:700;}
 

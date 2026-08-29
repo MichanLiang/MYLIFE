@@ -96,7 +96,7 @@ const App = {
     if(this.curView==='daily'){
       Daily.todayEntryId = null;
       Daily.draftBlocks={};
-      Daily.selectedMood='😊';
+      Daily.selectedMood='happy';
       Daily.setTab('plan');
     }
     else if(this.curView==='money') Money.openMoneyForm();

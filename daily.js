@@ -6,7 +6,7 @@
 const Daily = {
   tab: 'plan',
   draftBlocks: {},
-  selectedMood: '😊',
+  selectedMood: 'happy',
   activeCat: 'work',
   todayEntryId: null,
 
@@ -38,11 +38,11 @@ const Daily = {
     if(existing){
       this.todayEntryId = existing.id;
       this.draftBlocks = existing.blocks ? {...existing.blocks} : {};
-      this.selectedMood = existing.mood || '😊';
+      this.selectedMood = moodByKey(existing.mood).key;
     } else {
       this.todayEntryId = null;
       this.draftBlocks = {};
-      this.selectedMood = '😊';
+      this.selectedMood = 'happy';
     }
     
     el.innerHTML = `
@@ -50,11 +50,11 @@ const Daily = {
       <div class="card entry-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span class="d">${niceDate(today)} · 星期${WD[new Date(today).getDay()]}</span>
-          <span class="mood" id="dailyMoodDisplay">${this.selectedMood}</span>
+          <span class="mood" id="dailyMoodDisplay">${moodIconHtml(this.selectedMood,22)}</span>
         </div>
         <div class="field"><label>今天的心情</label>
           <div class="mood-row" id="moodRow">
-            ${MOODS.map(m=>`<div class="mood-opt ${m===this.selectedMood?'sel':''}" data-m="${m}" onclick="Daily.pickMood(this,'${m}')">${m}</div>`).join('')}
+            ${MOODS.map(m=>`<div class="mood-opt ${m.key===this.selectedMood?'sel':''}" data-m="${m.key}" onclick="Daily.pickMood(this,'${m.key}')"><i class="${m.icon}" style="color:${m.color}"></i><span class="mood-label">${m.label}</span></div>`).join('')}
           </div>
         </div>
         <div class="field"><label>寫點什麼</label><textarea id="dailyText" placeholder="今天發生了什麼有趣的事？" oninput="Daily.autoSave()">${existing?esc(existing.text):''}</textarea></div>
@@ -90,7 +90,7 @@ const Daily = {
     document.querySelectorAll('#moodRow .mood-opt').forEach(e=>e.classList.remove('sel'));
     el.classList.add('sel');
     this.selectedMood = m;
-    document.getElementById('dailyMoodDisplay').textContent = m;
+    document.getElementById('dailyMoodDisplay').innerHTML = moodIconHtml(m,22);
     this.autoSave();
   },
 
@@ -269,7 +269,7 @@ const Daily = {
       <div class="card entry-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span class="d">${niceDate(e.date)} · 星期${WD[new Date(e.date).getDay()]}</span>
-          <span class="mood">${e.mood}</span>
+          <span class="mood">${moodIconHtml(e.mood,22)}</span>
         </div>
         ${e.text? `<div class="txt">${esc(e.text)}</div>`:''}
         <div class="tblock-grid" style="margin-top:10px;">
