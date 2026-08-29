@@ -59,18 +59,17 @@ const MOODS = [
   { key:'angry',   icon:'ph ph-fire',         label:'生氣', color:'#C25450' },
   { key:'sad',     icon:'ph ph-cloud-rain',   label:'難過', color:'#5B8FA8' },
   { key:'excited', icon:'ph ph-sparkle',      label:'興奮', color:'#D4783A' },
-  { key:'neutral', icon:'ph ph-smiley-meh',   label:'普通', color:'#9A9589' },
 ];
 
 const MOOD_EMOJI_MAP = {
   '😊':'happy','😌':'calm','😴':'sleepy','😤':'angry',
-  '😢':'sad','🤩':'excited','😐':'neutral'
+  '😢':'sad','🤩':'excited'
 };
 function moodByKey(k){
-  if(!k) return MOODS[MOODS.length-1];
+  if(!k) return MOODS[0];
   if(MOODS.find(m=>m.key===k)) return MOODS.find(m=>m.key===k);
   const mapped = MOOD_EMOJI_MAP[k];
-  return mapped ? MOODS.find(m=>m.key===mapped) : MOODS[MOODS.length-1];
+  return mapped ? MOODS.find(m=>m.key===mapped) : MOODS[0];
 }
 function moodIconHtml(key, size){
   const m = moodByKey(key);
