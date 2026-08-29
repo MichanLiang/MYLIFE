@@ -212,7 +212,7 @@ const Money = {
             const over = spent > limit;
             return `<div style="margin-bottom:12px;">
               <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
-                <span>${catDef?catDef.ic+' ':''}${k}</span>
+                <span>${catDef?`<i class="${catDef.ic}" style="color:var(--ink-soft);"></i> `:''}${k}</span>
                 <span>NT$${spent.toLocaleString()} / NT$${limit.toLocaleString()}</span>
               </div>
               <div class="budget-bar"><div class="budget-fill" style="width:${pct}%; background:${over?'#a1503e':'var(--c-money)'};"></div></div>
