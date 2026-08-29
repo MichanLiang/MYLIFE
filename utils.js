@@ -96,6 +96,7 @@ const COLOR_LABELS = {
 const TBLOCK_CATS = [
   {k:'work', label:'工作', color:'#4E6E8E'},
   {k:'school', label:'課業', color:'#5B8FA8'},
+  {k:'grow', label:'自我提升', color:'#7B6BA3'},
   {k:'rest', label:'休息', color:'#6F8F63'},
   {k:'life', label:'生活瑣事', color:'#B8842E'},
   {k:'social', label:'社交', color:'#8A5578'},
