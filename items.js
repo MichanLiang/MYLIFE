@@ -110,10 +110,8 @@ const Items = {
     const it = State.items.find(x=>x.id===id); if(!it) return;
     const currentIcon = it.icon||'ph ph-drop';
     const icons = [
-      {v:'ph ph-drop', l:'水滴'}, {v:'ph ph-bottle', l:'瓶子'}, {v:'ph ph-flask', l:'燒杯'},
-      {v:'ph ph-spray-bottle', l:'噴瓶'}, {v:'ph ph-toothbrush', l:'牙刷'}, {v:'ph ph-shampoo', l:'洗劑'},
-      {v:'ph ph-sun', l:'防曬'}, {v:'ph ph-leaf', l:'自然'}, {v:'ph ph-heart', l:'愛心'},
-      {v:'ph ph-star', l:'星星'}, {v:'ph ph-gift', l:'禮物'}, {v:'ph ph-scissors', l:'剪刀'}
+      {v:'ph ph-drop', l:'保養'}, {v:'ph ph-bottle', l:'用品'}, {v:'ph ph-spray-bottle', l:'清潔'},
+      {v:'ph ph-fork-knife', l:'食品'}, {v:'ph ph-pencil-simple', l:'文具'}, {v:'ph ph-dots-three', l:'其他'}
     ];
     App.openSheet(`
       <div class="sheet-head"><h3>編輯消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
@@ -163,10 +161,8 @@ const Items = {
 
   openItemForm(){
     const icons = [
-      {v:'ph ph-drop', l:'水滴'}, {v:'ph ph-bottle', l:'瓶子'}, {v:'ph ph-flask', l:'燒杯'},
-      {v:'ph ph-spray-bottle', l:'噴瓶'}, {v:'ph ph-toothbrush', l:'牙刷'}, {v:'ph ph-shampoo', l:'洗劑'},
-      {v:'ph ph-sun', l:'防曬'}, {v:'ph ph-leaf', l:'自然'}, {v:'ph ph-heart', l:'愛心'},
-      {v:'ph ph-star', l:'星星'}, {v:'ph ph-gift', l:'禮物'}, {v:'ph ph-scissors', l:'剪刀'}
+      {v:'ph ph-drop', l:'保養'}, {v:'ph ph-bottle', l:'用品'}, {v:'ph ph-spray-bottle', l:'清潔'},
+      {v:'ph ph-fork-knife', l:'食品'}, {v:'ph ph-pencil-simple', l:'文具'}, {v:'ph ph-dots-three', l:'其他'}
     ];
     App.openSheet(`
       <div class="sheet-head"><h3>新增消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
