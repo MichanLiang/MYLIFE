@@ -40,7 +40,6 @@ const Articles = {
         ${a.summary? `<div class="sum">${esc(a.summary)}</div>`:''}
         <div class="meta">
           <span><i class="ph ph-calendar"></i> ${niceDate(a.date)}</span>
-          ${a.tag?`<span class="pill" style="background:var(--paper-2);">${esc(a.tag)}</span>`:''}
           <span style="margin-left:auto;">
             <span style="cursor:pointer; margin-right:8px;" onclick="Articles.openEdit('${a.id}')"><i class="ph ph-pencil-simple"></i></span>
             <span style="cursor:pointer; color:#a1503e;" onclick="Articles.deleteArticle('${a.id}')"><i class="ph ph-trash"></i></span>
@@ -54,13 +53,12 @@ const Articles = {
     const folders = State.articleFolders;
     App.openSheet(`
       <div class="sheet-head"><h3>新增筆記</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div class="field"><label>標題</label><input id="rTitle" placeholder="文章 / 筆記標題"></div>
+      <div class="field"><label>標題</label><input id="rTitle"></div>
       <div class="row2">
         <div class="field"><label>日期</label><input id="rDate" type="date" value="${todayStr()}"></div>
-        <div class="field"><label>標籤</label><input id="rTag" placeholder="例如：工作"></div>
+        <div class="field"><label>資料夾</label><select id="rFolder">${folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></div>
       </div>
-      <div class="field"><label>資料夾</label><select id="rFolder">${folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></div>
-      <div class="field"><label>摘要 / 心得</label><textarea id="rSum" placeholder="重點整理…"></textarea></div>
+      <div class="field"><label>內容</label><textarea id="rSum"></textarea></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Articles.save()">儲存</button>
     `);
   },
@@ -70,7 +68,6 @@ const Articles = {
     State.articles.unshift({
       id:uid(), title,
       date:document.getElementById('rDate').value||todayStr(),
-      tag:document.getElementById('rTag').value.trim(),
       summary:document.getElementById('rSum').value.trim(),
       folder:document.getElementById('rFolder').value
     });
@@ -85,10 +82,9 @@ const Articles = {
       <div class="field"><label>標題</label><input id="rTitle" value="${esc(a.title)}"></div>
       <div class="row2">
         <div class="field"><label>日期</label><input id="rDate" type="date" value="${a.date||''}"></div>
-        <div class="field"><label>標籤</label><input id="rTag" value="${esc(a.tag||'')}"></div>
+        <div class="field"><label>資料夾</label><select id="rFolder">${folders.map(f=>`<option value="${f.id}" ${f.id===a.folder?'selected':''}>${esc(f.name)}</option>`).join('')}</select></div>
       </div>
-      <div class="field"><label>資料夾</label><select id="rFolder">${folders.map(f=>`<option value="${f.id}" ${f.id===a.folder?'selected':''}>${esc(f.name)}</option>`).join('')}</select></div>
-      <div class="field"><label>摘要 / 心得</label><textarea id="rSum">${esc(a.summary||'')}</textarea></div>
+      <div class="field"><label>內容</label><textarea id="rSum">${esc(a.summary||'')}</textarea></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Articles.update('${id}')">儲存</button>
     `);
   },
@@ -97,7 +93,6 @@ const Articles = {
     const a = State.articles.find(x=>x.id===id); if(!a) return;
     a.title = document.getElementById('rTitle').value.trim() || a.title;
     a.date = document.getElementById('rDate').value || a.date;
-    a.tag = document.getElementById('rTag').value.trim();
     a.summary = document.getElementById('rSum').value.trim();
     a.folder = document.getElementById('rFolder').value;
     save('articles', State.articles); App.closeSheet(); this.render();
