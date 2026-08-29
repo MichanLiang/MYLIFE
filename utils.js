@@ -8,7 +8,8 @@ const LS = {
   items:'mylife_items', chores:'mylife_chores', articles:'mylife_articles',
   todos:'mylife_todos', budget:'mylife_budget', lists:'mylife_lists',
   dailyGoals:'mylife_dailyGoals', reviews:'mylife_reviews',
-  calReviews:'mylife_calReviews', colors:'mylife_colors'
+  calReviews:'mylife_calReviews', colors:'mylife_colors',
+  articleFolders:'mylife_articleFolders'
 };
 
 function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
@@ -131,6 +132,7 @@ const State = {
   items: load(LS.items, []),
   chores: load(LS.chores, []),
   articles: load(LS.articles, []),
+  articleFolders: load(LS.articleFolders, [{id:'default', name:'預設'}]),
   todos: load(LS.todos, {}),
   budget: load(LS.budget, { monthly: 0, cats: {} }),
   lists: load(LS.lists, [{id:'default', name:'預設清單'}]),

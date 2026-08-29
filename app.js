@@ -84,7 +84,10 @@ const App = {
     else if(this.curView==='daily') Daily.render();
     else if(this.curView==='money') Money.render();
     else if(this.curView==='items') Items.render();
-    else if(this.curView==='articles') Articles.render();
+    else if(this.curView==='articles'){
+      Articles.renderTabs();
+      Articles.render();
+    }
     else if(this.curView==='settings') Settings.render();
   },
 
