@@ -21,17 +21,19 @@ const Auth = {
     fbAuth.onAuthStateChanged(user => {
       if(user){
         if(!State.user || State.user.email !== user.email){
-          // New login or different user
           this.handleFirebaseUser(user);
         } else {
-          // Same user, just sync data
           DB.setUid(user.uid);
           DB.loadAll(()=>{
             initDefaultPockets();
-            if(document.getElementById('view-login').classList.contains('active')){
+            if(document.getElementById('view-login')){
               App.showShell();
             }
           });
+        }
+      } else {
+        if(!document.getElementById('view-login')){
+          App.showLogin();
         }
       }
     });

@@ -10,14 +10,10 @@ const App = {
   },
 
   boot(){
-    if(!State.user){
-      this.showLogin();
-      Auth.init();
-      return;
+    if(State.user){
+      this.showShell();
     }
-    
     Auth.init();
-    this.showShell();
   },
 
   showLogin(){
