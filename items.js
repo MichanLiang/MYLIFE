@@ -107,6 +107,7 @@ const Items = {
       </div>
       <span class="item-row-status" style="color:${statusColor};">${statusTxt}</span>
     </div>`;
+  },
 
   renderItemCard(it){
     const du = daysUntil(it.expiry);
