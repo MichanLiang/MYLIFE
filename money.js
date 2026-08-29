@@ -239,9 +239,9 @@ const Money = {
     }
     el.innerHTML = `
       <div class="card">
-        <div class="field"><label>轉出存錢處</label><select id="fromPocket">${State.pockets.map(p=>`<option value="${p.id}">${p.icon} ${esc(p.name)} (餘額 NT$${p.balance.toLocaleString()})</option>`).join('')}</select></div>
+        <div class="field"><label>轉出存錢處</label><select id="fromPocket">${State.pockets.map(p=>`<option value="${p.id}">${esc(p.name)} (餘額 NT$${p.balance.toLocaleString()})</option>`).join('')}</select></div>
         <div class="transfer-arrow">↓</div>
-        <div class="field"><label>轉入存錢處</label><select id="toPocket">${State.pockets.map(p=>`<option value="${p.id}">${p.icon} ${esc(p.name)} (餘額 NT$${p.balance.toLocaleString()})</option>`).join('')}</select></div>
+        <div class="field"><label>轉入存錢處</label><select id="toPocket">${State.pockets.map(p=>`<option value="${p.id}">${esc(p.name)} (餘額 NT$${p.balance.toLocaleString()})</option>`).join('')}</select></div>
         <div class="field"><label>金額</label><input id="transferAmt" type="number" placeholder="0"></div>
         <div class="field"><label>備註（選填）</label><input id="transferNote" placeholder="例如：從銀行提領"></div>
         <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.doTransfer()">確認轉帳</button>
