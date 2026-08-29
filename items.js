@@ -91,50 +91,46 @@ const Items = {
 
   renderItemRow(it){
     const du = daysUntil(it.expiry);
-    let statusColor = '#6F8F63', statusTxt='狀況良好';
-    if(du!==null){
-      if(du<0){statusColor='#a1503e'; statusTxt='已過期';}
-      else if(du<=7){statusColor='#B8842E'; statusTxt=`剩 ${du} 天`;}
-      else{statusTxt=`剩 ${du} 天`;}
-    }
+    const statusMap = {unopened:{txt:'未開封',color:'var(--ink-soft)'}, inuse:{txt:'使用中',color:'var(--c-item)'}, low:{txt:'快耗盡',color:'#B8842E'}};
+    const status = it.status || (it.opened ? 'inuse' : 'unopened');
+    const st = statusMap[status] || statusMap.unopened;
     return `<div class="item-row" onclick="Items.openItemDetail('${it.id}')">
       <div class="item-row-left">
         <span class="item-row-icon"><i class="${it.icon||'ph ph-drop'}"></i></span>
         <div class="item-row-info">
           <span class="item-row-name">${esc(it.name)}</span>
-          <span class="item-row-sub">${esc(it.category||'一般')} · ${it.opened?'使用中':'未開封'}${it.quantity!==undefined?' · 庫存 '+it.quantity:''}</span>
+          <span class="item-row-sub">${esc(it.category||'一般')}${it.quantity!==undefined?' · 庫存 '+it.quantity:''}</span>
         </div>
       </div>
-      <span class="item-row-status" style="color:${statusColor};">${statusTxt}</span>
+      <span class="item-row-status" style="color:${st.color};">${st.txt}</span>
     </div>`;
   },
 
   renderItemCard(it){
     const du = daysUntil(it.expiry);
-    let statusColor = '#6F8F63', statusTxt='狀況良好';
-    if(du!==null){
-      if(du<0){statusColor='#a1503e'; statusTxt='已過期';}
-      else if(du<=7){statusColor='#B8842E'; statusTxt=`剩 ${du} 天`;}
-      else{statusTxt=`剩 ${du} 天`;}
-    }
+    const statusMap = {unopened:{txt:'未開封',color:'var(--ink-soft)'}, inuse:{txt:'使用中',color:'var(--c-item)'}, low:{txt:'快耗盡',color:'#B8842E'}};
+    const status = it.status || (it.opened ? 'inuse' : 'unopened');
+    const st = statusMap[status] || statusMap.unopened;
     return `<div class="item-card" onclick="Items.openItemDetail('${it.id}')">
-      <div class="top"><span class="ic"><i class="${it.icon||'ph ph-drop'}"></i></span><span class="status-dot" style="background:${statusColor}"></span></div>
+      <div class="top"><span class="ic"><i class="${it.icon||'ph ph-drop'}"></i></span><span class="status-dot" style="background:${st.color}"></span></div>
       <h4>${esc(it.name)}</h4>
-      <div class="sub">${esc(it.category||'一般')} · ${it.opened?'使用中':'未開封'}</div>
+      <div class="sub">${esc(it.category||'一般')}</div>
       ${it.quantity!==undefined? `<div class="qty">庫存：${it.quantity}</div>`:''}
       ${it.daysPerUnit? `<div class="sub">每 ${it.daysPerUnit} 天消耗一單位</div>`:''}
-      <div class="sub" style="color:${statusColor}; font-weight:700; margin-top:4px;">${statusTxt}</div>
+      <div class="sub" style="color:${st.color}; font-weight:700; margin-top:4px;">${st.txt}</div>
     </div>`;
   },
 
   openItemDetail(id){
     const it = State.items.find(x=>x.id===id); if(!it) return;
+    const statusMap = {unopened:'未開封', inuse:'使用中', low:'快耗盡'};
+    const status = it.status || (it.opened ? 'inuse' : 'unopened');
     App.openSheet(`
       <div class="sheet-head"><h3>${esc(it.name)}</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div style="text-align:center; font-size:48px; margin:10px 0;"><i class="${it.icon||'ph ph-drop'}"></i></div>
       <div class="card">
         <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">分類</span><span style="font-weight:600;">${esc(it.category||'一般')}</span></div>
-        <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">狀態</span><span style="font-weight:600;">${it.opened?'使用中':'未開封'}</span></div>
+        <div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">狀態</span><span style="font-weight:600;">${statusMap[status]||'未開封'}</span></div>
         ${it.quantity!==undefined? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">庫存數量</span><span style="font-weight:600; font-family:'Fraunces',serif; font-size:16px; color:var(--c-item);">${it.quantity}</span></div>`:''}
         ${it.daysPerUnit? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">消耗速度</span><span style="font-weight:600;">每 ${it.daysPerUnit} 天一單位</span></div>`:''}
         ${it.expiry? `<div class="flex-between mb-8"><span style="color:var(--ink-soft); font-size:13px;">到期日</span><span style="font-weight:600;">${niceDate(it.expiry)}</span></div>`:''}
@@ -174,7 +170,7 @@ const Items = {
         <div class="field"><label>預估到期日</label><input id="eExp" type="date" value="${it.expiry||''}"></div>
       </div>
       <div class="field"><label>購買地點（選填）</label><input id="ePlace" value="${esc(it.purchasePlace||'')}"></div>
-      <div class="field"><label><input type="checkbox" id="eOpened" ${it.opened?'checked':''} style="width:auto; margin-right:6px;">使用中</label></div>
+      <div class="field"><label>狀態</label><select id="eStatus"><option value="unopened" ${it.status==='unopened'?'selected':''}>未開封</option><option value="inuse" ${it.status==='inuse'?'selected':''}>使用中</option><option value="low" ${it.status==='low'?'selected':''}>快耗盡</option></select></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveEditItem('${it.id}')">儲存</button>
     `);
   },
@@ -191,7 +187,7 @@ const Items = {
     it.buyDate = document.getElementById('eBuy').value;
     it.expiry = document.getElementById('eExp').value;
     it.purchasePlace = document.getElementById('ePlace').value.trim();
-    it.opened = document.getElementById('eOpened').checked;
+    it.status = document.getElementById('eStatus').value;
     save('items', State.items);
     App.closeSheet(); this.render();
   },
@@ -225,7 +221,7 @@ const Items = {
         <div class="field"><label>預估到期日</label><input id="iExp" type="date"></div>
       </div>
       <div class="field"><label>購買地點（選填）</label><input id="iPlace" placeholder="例如：屈臣氏"></div>
-      <div class="field"><label><input type="checkbox" id="iOpened" style="width:auto; margin-right:6px;">使用中</label></div>
+      <div class="field"><label>狀態</label><select id="iStatus"><option value="unopened">未開封</option><option value="inuse">使用中</option><option value="low">快耗盡</option></select></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveItem()">儲存</button>
     `);
   },
@@ -244,7 +240,7 @@ const Items = {
       buyDate:document.getElementById('iBuy').value,
       expiry:document.getElementById('iExp').value,
       purchasePlace:document.getElementById('iPlace').value.trim(),
-      opened:document.getElementById('iOpened').checked
+      status:document.getElementById('iStatus').value
     });
     save('items', State.items); App.closeSheet(); this.render();
   },
