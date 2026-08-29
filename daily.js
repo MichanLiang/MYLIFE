@@ -261,26 +261,18 @@ const Daily = {
   /* ---- Diary Tab ---- */
   renderDiary(){
     const el = document.getElementById('dailyDiaryPane');
-    if(State.daily.length===0){
-      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-book"></i></span>還沒有日記紀錄</div>`;
+    const entries = State.daily.filter(e=>e.text && e.text.trim());
+    if(entries.length===0){
+      el.innerHTML = `<div class="empty"><span class="big"><i class="ph ph-book"></i></span>還沒有日記紀錄<br>在計劃表「寫點什麼」欄位寫下心情，就會出现在這裡</div>`;
       return;
     }
-    el.innerHTML = State.daily.map(e=>`
+    el.innerHTML = entries.map(e=>`
       <div class="card entry-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span class="d">${niceDate(e.date)} · 星期${WD[new Date(e.date).getDay()]}</span>
           <span class="mood">${moodIconHtml(e.mood,22)}</span>
         </div>
-        ${e.text? `<div class="txt">${esc(e.text)}</div>`:''}
-        <div class="tblock-grid" style="margin-top:10px;">
-          ${tblockHours().map(h=>{
-            const cat = TBLOCK_CATS.find(c=>c.k===(e.blocks?.[h]||'none'));
-            return `<div class="tblock" style="background:${cat.color}${cat.k==='none'?'':'33'}; border-color:${cat.k==='none'?'var(--line)':cat.color};" title="${h}:00">${h}</div>`;
-          }).join('')}
-        </div>
-        <div class="legend">
-          ${TBLOCK_CATS.filter(c=>c.k!=='none').map(c=>`<span><i style="background:${c.color}"></i>${c.label}</span>`).join('')}
-        </div>
+        <div class="txt">${esc(e.text)}</div>
         <div style="margin-top:10px; text-align:right;"><span class="more" style="color:var(--ink-soft); font-size:11.5px; cursor:pointer;" onclick="Daily.deleteEntry('${e.id}')">刪除</span></div>
       </div>`).join('');
   }
