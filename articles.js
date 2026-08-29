@@ -16,7 +16,7 @@ const Articles = {
     const folders = State.articleFolders;
     tabs.innerHTML = folders.map(f=>
       `<button class="tab-btn ${f.id===this.filter?'active':''}" onclick="Articles.setFilter('${f.id}')">${esc(f.name)}</button>`
-    ).join('') + `<button class="tab-btn" onclick="Articles.openFolderManager()" style="font-size:16px;">＋</button>`;
+    ).join('') + `<button class="tab-btn" onclick="Articles.addFolderInline()" style="font-size:16px; padding:0 10px;">＋</button>`;
   },
 
   render(){
@@ -103,6 +103,17 @@ const Articles = {
     if(!confirm('確定要刪除這篇筆記嗎？')) return;
     State.articles = State.articles.filter(x=>x.id!==id);
     save('articles', State.articles); this.render();
+  },
+
+  addFolderInline(){
+    const name = prompt('資料夾名稱：');
+    if(!name || !name.trim()) return;
+    const id = uid();
+    State.articleFolders.push({id, name:name.trim()});
+    save('articleFolders', State.articleFolders);
+    this.filter = id;
+    this.renderTabs();
+    this.render();
   },
 
   openFolderManager(){
