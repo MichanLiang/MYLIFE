@@ -108,11 +108,20 @@ const Items = {
 
   openEditItem(id){
     const it = State.items.find(x=>x.id===id); if(!it) return;
+    const currentIcon = it.icon||'ph ph-drop';
+    const icons = [
+      {v:'ph ph-drop', l:'水滴'}, {v:'ph ph-bottle', l:'瓶子'}, {v:'ph ph-flask', l:'燒杯'},
+      {v:'ph ph-spray-bottle', l:'噴瓶'}, {v:'ph ph-toothbrush', l:'牙刷'}, {v:'ph ph-shampoo', l:'洗劑'},
+      {v:'ph ph-sun', l:'防曬'}, {v:'ph ph-leaf', l:'自然'}, {v:'ph ph-heart', l:'愛心'},
+      {v:'ph ph-star', l:'星星'}, {v:'ph ph-gift', l:'禮物'}, {v:'ph ph-scissors', l:'剪刀'}
+    ];
     App.openSheet(`
       <div class="sheet-head"><h3>編輯消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div class="row2">
-        <div class="field"><label>名稱</label><input id="eName" value="${esc(it.name)}"></div>
-        <div class="field"><label>圖示</label><input id="eIcon" value="${it.icon||'ph ph-drop'}"></div>
+      <div class="field"><label>名稱</label><input id="eName" value="${esc(it.name)}"></div>
+      <div class="field"><label>圖示</label>
+        <div class="icon-picker" id="iconPicker">
+          ${icons.map(i=>`<div class="icon-opt ${i.v===currentIcon?'sel':''}" data-icon="${i.v}" onclick="Items.pickIcon(this)"><i class="${i.v}"></i><span>${i.l}</span></div>`).join('')}
+        </div>
       </div>
       <div class="field"><label>分類</label><input id="eCat" value="${esc(it.category||'')}"></div>
       <div class="field"><label>所屬清單</label><select id="eList">${State.lists.map(l=>`<option value="${l.id}" ${l.id===(it.listId||'default')?'selected':''}>${esc(l.name)}</option>`).join('')}</select></div>
@@ -133,7 +142,8 @@ const Items = {
   saveEditItem(id){
     const it = State.items.find(x=>x.id===id); if(!it) return;
     it.name = document.getElementById('eName').value.trim()||it.name;
-    it.icon = document.getElementById('eIcon').value||'ph ph-drop';
+    const selIcon = document.querySelector('#iconPicker .icon-opt.sel');
+    it.icon = selIcon ? selIcon.dataset.icon : it.icon;
     it.category = document.getElementById('eCat').value.trim();
     it.listId = document.getElementById('eList').value;
     it.quantity = document.getElementById('eQty').value!==''? parseFloat(document.getElementById('eQty').value):undefined;
@@ -146,12 +156,25 @@ const Items = {
     App.closeSheet(); this.render();
   },
 
+  pickIcon(el){
+    document.querySelectorAll('#iconPicker .icon-opt').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+  },
+
   openItemForm(){
+    const icons = [
+      {v:'ph ph-drop', l:'水滴'}, {v:'ph ph-bottle', l:'瓶子'}, {v:'ph ph-flask', l:'燒杯'},
+      {v:'ph ph-spray-bottle', l:'噴瓶'}, {v:'ph ph-toothbrush', l:'牙刷'}, {v:'ph ph-shampoo', l:'洗劑'},
+      {v:'ph ph-sun', l:'防曬'}, {v:'ph ph-leaf', l:'自然'}, {v:'ph ph-heart', l:'愛心'},
+      {v:'ph ph-star', l:'星星'}, {v:'ph ph-gift', l:'禮物'}, {v:'ph ph-scissors', l:'剪刀'}
+    ];
     App.openSheet(`
       <div class="sheet-head"><h3>新增消耗品</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div class="row2">
-        <div class="field"><label>名稱</label><input id="iName" placeholder="例如：洗面乳"></div>
-        <div class="field"><label>圖示</label><input id="iIcon" value="ph ph-drop"></div>
+      <div class="field"><label>名稱</label><input id="iName" placeholder="例如：洗面乳"></div>
+      <div class="field"><label>圖示</label>
+        <div class="icon-picker" id="iconPicker">
+          ${icons.map(i=>`<div class="icon-opt ${i.v==='ph ph-drop'?'sel':''}" data-icon="${i.v}" onclick="Items.pickIcon(this)"><i class="${i.v}"></i><span>${i.l}</span></div>`).join('')}
+        </div>
       </div>
       <div class="field"><label>分類</label><input id="iCat" placeholder="例如：保養品" list="catList"><datalist id="catList">${ITEM_CATEGORIES.map(c=>`<option value="${c}">`).join('')}</datalist></div>
       <div class="field"><label>所屬清單</label><select id="iList">${State.lists.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></div>
@@ -172,9 +195,10 @@ const Items = {
   saveItem(){
     const name = document.getElementById('iName').value.trim(); if(!name) return;
     const qty = document.getElementById('iQty').value;
+    const selIcon = document.querySelector('#iconPicker .icon-opt.sel');
+    const icon = selIcon ? selIcon.dataset.icon : 'ph ph-drop';
     State.items.push({
-      id:uid(), name,
-      icon:document.getElementById('iIcon').value||'ph ph-drop',
+      id:uid(), name, icon,
       category:document.getElementById('iCat').value.trim(),
       listId:document.getElementById('iList').value,
       quantity:qty!==''? parseFloat(qty):undefined,
