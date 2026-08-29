@@ -306,10 +306,20 @@ const Items = {
     el.innerHTML = State.chores.map(c=>{
       const next = this.nextChoreDate(c);
       const du = daysUntil(next);
-      return `<div class="card"><div class="chore-row" style="border:none; padding:0;" onclick="Items.doneChore('${c.id}')">
-        <div><div class="nm"><i class="ph ph-broom"></i> ${esc(c.name)}</div><div class="sub">每 ${c.freq} 天一次 · 下次：${niceDate(next)}${du<=0?' <i class="ph ph-warning"></i> 需完成':''}</div></div>
-        <div class="btn btn-ghost btn-sm">完成 ✓</div>
-      </div></div>`;
+      const ready = du <= 2;
+      return `<div class="card chore-card">
+        <div class="chore-row" style="border:none; padding:0;">
+          <div style="flex:1;">
+            <div class="nm"><i class="ph ph-broom"></i> ${esc(c.name)}</div>
+            <div class="sub">每 ${c.freq} 天一次 · 下次：${niceDate(next)}${ready?' <span style="color:var(--c-item); font-weight:700;">可完成</span>':' · 剩 '+du+' 天'}</div>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${ready ? `<div class="btn btn-ghost btn-sm" onclick="Items.doneChore('${c.id}')">完成 ✓</div>` : ''}
+            <button class="btn-text-sm" onclick="Items.openEditChore('${c.id}')"><i class="ph ph-pencil-simple"></i></button>
+            <button class="btn-text-sm" onclick="Items.deleteChore('${c.id}')"><i class="ph ph-trash"></i></button>
+          </div>
+        </div>
+      </div>`;
     }).join('');
   },
 
@@ -330,15 +340,43 @@ const Items = {
     App.openSheet(`
       <div class="sheet-head"><h3>新增瑣事</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
       <div class="field"><label>名稱</label><input id="cName" placeholder="例如：清冰箱"></div>
-      <div class="field"><label>清理頻率（天）</label><input id="cFreq" type="number" value="7"></div>
+      <div class="field"><label>每次間隔（天）</label><input id="cFreq" type="number" value="7"></div>
+      <div class="field"><label>上次完成日期</label><input id="cLast" type="date" value="${todayStr()}"></div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveChore()">儲存</button>
     `);
   },
 
   saveChore(){
     const name = document.getElementById('cName').value.trim(); if(!name) return;
-    State.chores.push({id:uid(), name, freq:parseInt(document.getElementById('cFreq').value)||7, last:todayStr()});
+    const freq = parseInt(document.getElementById('cFreq').value)||7;
+    const last = document.getElementById('cLast').value || todayStr();
+    State.chores.push({id:uid(), name, freq, last});
     save('chores', State.chores); App.closeSheet(); this.render();
+  },
+
+  openEditChore(id){
+    const c = State.chores.find(x=>x.id===id); if(!c) return;
+    App.openSheet(`
+      <div class="sheet-head"><h3>編輯瑣事</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="field"><label>名稱</label><input id="eCName" value="${esc(c.name)}"></div>
+      <div class="field"><label>每次間隔（天）</label><input id="eCFreq" type="number" value="${c.freq}"></div>
+      <div class="field"><label>上次完成日期</label><input id="eCLast" type="date" value="${c.last||todayStr()}"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Items.saveEditChore('${id}')">儲存</button>
+    `);
+  },
+
+  saveEditChore(id){
+    const c = State.chores.find(x=>x.id===id); if(!c) return;
+    c.name = document.getElementById('eCName').value.trim() || c.name;
+    c.freq = parseInt(document.getElementById('eCFreq').value) || c.freq;
+    c.last = document.getElementById('eCLast').value || c.last;
+    save('chores', State.chores); App.closeSheet(); this.render();
+  },
+
+  deleteChore(id){
+    if(!confirm('確定要刪除這項瑣事嗎？')) return;
+    State.chores = State.chores.filter(x=>x.id!==id);
+    save('chores', State.chores); this.render();
   },
 
   /* ---- Week View ---- */
