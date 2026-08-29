@@ -132,7 +132,7 @@ const State = {
   chores: load(LS.chores, []),
   articles: load(LS.articles, []),
   todos: load(LS.todos, {}),
-  budget: load(LS.budget, { monthly: 0 }),
+  budget: load(LS.budget, { monthly: 0, cats: {} }),
   lists: load(LS.lists, [{id:'default', name:'預設清單'}]),
   dailyGoals: load(LS.dailyGoals, {}),
   reviews: load(LS.reviews, {}),

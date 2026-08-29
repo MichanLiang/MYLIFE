@@ -178,15 +178,18 @@ const Money = {
     const totalOut = monthTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
     const totalIn = monthTx.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
     const budget = State.budget.monthly;
+    const catBudgets = State.budget.cats || {};
 
     const byCat = {};
     monthTx.filter(t=>t.type==='out').forEach(t=>{ byCat[t.cat]=(byCat[t.cat]||0)+t.amount; });
     const rows = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
 
+    const catBudgetKeys = Object.keys(catBudgets).filter(k=>catBudgets[k]>0);
+
     el.innerHTML = `
       <div class="budget-box">
         <div class="budget-header">
-          <h4>預算進度（本月）</h4>
+          <h4>總預算（本月）</h4>
           <span style="font-size:12px; cursor:pointer; color:var(--c-money);" onclick="Money.editBudget()"><i class="ph ph-pencil-simple"></i> 設定預算</span>
         </div>
         ${budget>0 ? `
@@ -196,8 +199,31 @@ const Money = {
             <span>剩餘 NT$${Math.max(0,budget-totalOut).toLocaleString()}</span>
             <span>${Math.round(totalOut/budget*100)}%</span>
           </div>
-        ` : `<div style="font-size:13px; color:var(--ink-soft);">尚未設定月預算，點此設定</div>`}
+        ` : `<div style="font-size:13px; color:var(--ink-soft);">尚未設定預算，點此設定</div>`}
       </div>
+      ${catBudgetKeys.length > 0 ? `
+        <div class="budget-box">
+          <div class="budget-header"><h4>分類預算</h4></div>
+          ${catBudgetKeys.map(k=>{
+            const catDef = MONEY_CATS.find(c=>c.k===k);
+            const spent = byCat[k]||0;
+            const limit = catBudgets[k];
+            const pct = Math.min(100, Math.round(spent/limit*100));
+            const over = spent > limit;
+            return `<div style="margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                <span>${catDef?catDef.ic+' ':''}${k}</span>
+                <span>NT$${spent.toLocaleString()} / NT$${limit.toLocaleString()}</span>
+              </div>
+              <div class="budget-bar"><div class="budget-fill" style="width:${pct}%; background:${over?'#a1503e':'var(--c-money)'};"></div></div>
+              <div class="budget-info">
+                <span>剩餘 NT$${Math.max(0,limit-spent).toLocaleString()}</span>
+                <span>${pct}%</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : ''}
       <div class="card">
         <div style="font-size:12px; color:var(--ink-soft); font-weight:700;">本月概覽</div>
         <div style="display:flex; gap:16px; margin-top:8px;">
@@ -216,16 +242,34 @@ const Money = {
 
   editBudget(){
     const current = State.budget.monthly;
+    const cats = State.budget.cats || {};
+    const catRows = MONEY_CATS.filter(c=>c.k!=='其他').map(c=>{
+      return `<div class="budget-cat-row">
+        <span style="font-size:13px;">${c.ic} ${c.k}</span>
+        <input type="number" class="budget-cat-input" data-cat="${c.k}" value="${cats[c.k]||''}" placeholder="0" style="width:100px; padding:6px 8px; font-size:13px;">
+      </div>`;
+    }).join('');
     App.openSheet(`
-      <div class="sheet-head"><h3>設定月預算</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
-      <div class="field"><label>每月預算金額</label><input id="budgetAmt" type="number" value="${current||''}" placeholder="例如：15000"></div>
+      <div class="sheet-head"><h3>設定預算</h3><button class="close-x" onclick="App.closeSheet()">✕</button></div>
+      <div class="field"><label>每月總預算</label><input id="budgetAmt" type="number" value="${current||''}" placeholder="例如：15000"></div>
+      <div class="field"><label>分類預算（選填）</label>
+        <div style="max-height:300px; overflow-y:auto;">
+          ${catRows}
+        </div>
+      </div>
       <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="Money.saveBudget()">儲存</button>
     `);
   },
 
   saveBudget(){
     const amt = parseFloat(document.getElementById('budgetAmt').value)||0;
+    const cats = {};
+    document.querySelectorAll('.budget-cat-input').forEach(el=>{
+      const v = parseFloat(el.value)||0;
+      if(v>0) cats[el.dataset.cat] = v;
+    });
     State.budget.monthly = amt;
+    State.budget.cats = cats;
     save('budget', State.budget);
     App.closeSheet(); this.render();
   },
