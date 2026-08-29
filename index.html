@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
-<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="main.css?v=2">
 </head>
 <body>
 <div class="app" id="app">
@@ -116,11 +116,7 @@
     <!-- ---- ARTICLES ---- -->
     <div class="view" id="view-articles">
       <div class="page-head"><h1>備忘錄</h1><span class="page-tag" style="background:var(--c-note-bg); color:var(--c-note);">Memo</span></div>
-      <div class="tabs">
-        <button class="tab-btn active" id="aTabAll" onclick="Articles.setFilter('all')">全部</button>
-        <button class="tab-btn" id="aTabTodo" onclick="Articles.setFilter('待讀')">待讀</button>
-        <button class="tab-btn" id="aTabDone" onclick="Articles.setFilter('已讀')">已讀</button>
-      </div>
+      <div class="tabs" id="articleTabs"></div>
       <div id="articlesList"></div>
     </div>
 
@@ -157,16 +153,16 @@
   <div class="sheet" id="sheet"></div>
 </div>
 
-<script src="utils.js"></script>
-<script src="db.js"></script>
-<script src="auth.js"></script>
-<script src="home.js"></script>
-<script src="daily.js"></script>
-<script src="money.js"></script>
-<script src="items.js"></script>
-<script src="articles.js"></script>
-<script src="calendar.js"></script>
-<script src="settings.js"></script>
-<script src="app.js"></script>
+<script src="utils.js?v=2"></script>
+<script src="db.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script src="home.js?v=2"></script>
+<script src="daily.js?v=2"></script>
+<script src="money.js?v=2"></script>
+<script src="items.js?v=2"></script>
+<script src="articles.js?v=2"></script>
+<script src="calendar.js?v=2"></script>
+<script src="settings.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
